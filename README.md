@@ -14,11 +14,8 @@ This tool requires .Net Framework `4.5.2` or above.
 
 ## Installing
 * Download the latest binary from [here](https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI/releases/download/1.0/Decrypt-PluralSight-Videos-GUI-1.0.zip).
-* Extract the zip file, open commandline and navigate to extracted folder containing DecryptPluralSightVideos.exe.
-* For more information about flags using on this tool, execute this command in the commandline ``DecryptPluralSightVideos /HELP``.
-1. Note: All the flag in this tool is ``case-insensitive``.
-2. Note: Usually the Pluralsight app will put the downloaded courses in the path:
-`C:\Users\<UserName>\AppData\Local\Pluralsight\courses`
+* Extract the zip file, open file DecryptPluralSightVideosGUI.exe.
+* Default Pluralsight Path is `C:\Users\<UserName>\AppData\Local\Pluralsight\courses`
 
 ## Troubleshooting
 1. In case you experience a "Path too long" exception, try to use an UNC path for export. You can share your local hard drive and connect to it using an UNC path. This way, Windows will use its Unicode API and in turn support path lengths with to 32k characters.
