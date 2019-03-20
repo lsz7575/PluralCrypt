@@ -1,4 +1,4 @@
-# Decrypt PluralSight Videos[![Build Status]
+# Decrypt PluralSight Videos
 When you donwload a video to watch offline through plural sight app, the video was encrypted and can only be watched by their app. This tool has been made to decrypt the videos, it will decrypt the video, rearrange the course folder name, decrypt module folder name, and for all, decrypt video of plural sight (.psv).
 
 Base on https://github.com/vinhloc1996/DecryptPluralSightVideos
