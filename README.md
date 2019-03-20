@@ -13,7 +13,7 @@ Added Feature:
 This tool requires .Net Framework `4.5.2` or above.
 
 ## Installing
-* Download the latest binary from [here](https://github.com/vinhloc1996/DecryptPluralSightVideos/releases/download/1.0.0.0/DecryptPluralSightVideos_v1.0.zip).
+* Download the latest binary from [here](https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI/releases/download/1.0/Decrypt-PluralSight-Videos-GUI-1.0.zip).
 * Extract the zip file, open commandline and navigate to extracted folder containing DecryptPluralSightVideos.exe.
 * For more information about flags using on this tool, execute this command in the commandline ``DecryptPluralSightVideos /HELP``.
 1. Note: All the flag in this tool is ``case-insensitive``.
