@@ -344,8 +344,24 @@ namespace DecryptPluralSightVideosGUI
 
                 if (chkDelete.Checked)
                 {
-                    Directory.Delete(courseItem.coursePath,true);
-                    RemoveCourseInDb(courseItem.coursePath);
+                    try
+                    {
+                        Directory.Delete(courseItem.coursePath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        bgwDecrypt.ReportProgress(1, new { Text = "Delete folder course " + courseItem.course.CourseTitle + " fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                    }
+
+                    try
+                    {
+                        RemoveCourseInDb(courseItem.coursePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.course.CourseTitle + " from Db fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                    }
+
 
                     bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.course.CourseTitle + " success!", Color = Color.Magenta, newLine = true });
                 }
@@ -629,7 +645,7 @@ namespace DecryptPluralSightVideosGUI
             string courseName = GetFolderName(coursePath);
 
             var cmd = DatabaseConnection.CreateCommand();
-            cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName";
+            cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName;pragma foreign_keys=off;";
             cmd.Parameters.Add(new SQLiteParameter("@courseName", courseName));
 
             var reader = cmd.ExecuteNonQuery();
