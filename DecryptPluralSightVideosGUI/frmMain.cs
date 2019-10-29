@@ -199,6 +199,30 @@ namespace DecryptPluralSightVideosGUI
             if (list.Count == 0) return;
             list[0].Checked = list[0].Checked ? false : true;
         }
+
+        private void btnOpenDB_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", System.IO.Path.GetDirectoryName(txtDBPath.Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnOpenOutput_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", txtOutputPath.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
         #endregion
 
         #region Method
@@ -265,60 +289,79 @@ namespace DecryptPluralSightVideosGUI
             {
                 CourseItem courseItem = listCourse.Where(r => r.course.CourseName == item.Name).Select(r => r).FirstOrDefault();
 
-                bgwDecrypt.ReportProgress(1, new { Text = "Starting decrcypt course " + courseItem.course.CourseTitle, Color = Color.Magenta, newLine = true });
-
-                //Create new course path with the output path
-                var newCoursePath = Path.Combine(txtOutputPath.Text, this.CleanName(courseItem.course.CourseTitle));
-
-                DirectoryInfo courseInfo = Directory.Exists(newCoursePath)
-                    ? new DirectoryInfo(newCoursePath)
-                    : Directory.CreateDirectory(newCoursePath);
-
-
-                //Get list all modules in current course
-                List<Module> listModules = courseItem.course.Modules;
-
-                if (listModules.Count > 0)
+                if (chkDecrypt.Checked)
                 {
-                    //Get each module
-                    foreach (Module module in listModules)
-                    {
-                        //Generate module hash name
-                        string moduleHash = this.ModuleHash(module.ModuleName, module.AuthorHandle);
-                        //Generate module path
-                        string moduleHashPath = Path.Combine(courseItem.coursePath, moduleHash);
-                        //Create new module path with decryption name
-                        string newModulePath = Path.Combine(courseInfo.FullName,
-                            module.ModuleIndex + ". " + module.ModuleTitle);
-                        //If length too long, rename it
-                        if (newModulePath.Length > 240)
-                        {
-                            newModulePath = Path.Combine(courseInfo.FullName,
-                                module.ModuleIndex + "");
-                        }
+                    bgwDecrypt.ReportProgress(1, new { Text = "Starting decrcypt course " + courseItem.course.CourseTitle, Color = Color.Magenta, newLine = true });
 
-                        if (Directory.Exists(moduleHashPath))
+                    //Create new course path with the output path
+                    var newCoursePath = Path.Combine(txtOutputPath.Text, this.CleanName(courseItem.course.CourseTitle));
+
+                    DirectoryInfo courseInfo = Directory.Exists(newCoursePath)
+                        ? new DirectoryInfo(newCoursePath)
+                        : Directory.CreateDirectory(newCoursePath);
+
+
+                    //Get list all modules in current course
+                    List<Module> listModules = courseItem.course.Modules;
+
+                    if (listModules.Count > 0)
+                    {
+                        //Get each module
+                        foreach (Module module in listModules)
                         {
-                            DirectoryInfo moduleInfo = Directory.Exists(newModulePath)
-                                ? new DirectoryInfo(newModulePath)
-                                : Directory.CreateDirectory(newModulePath);
-                            //Decrypt all videos in current module folder
-                            this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName);
-                        }
-                        else
-                        {
-                            //this.AddText("Folder " + moduleHash + " cannot be found in the current course path.", Color.Red, true);
-                            bgwDecrypt.ReportProgress(1, new { Text = "Folder " + moduleHash + " cannot be found in the current course path.", Color = Color.Red, newLine = true });
+                            //Generate module hash name
+                            string moduleHash = this.ModuleHash(module.ModuleName, module.AuthorHandle);
+                            //Generate module path
+                            string moduleHashPath = Path.Combine(courseItem.coursePath, moduleHash);
+                            //Create new module path with decryption name
+                            string newModulePath = Path.Combine(courseInfo.FullName,
+                                module.ModuleIndex + ". " + module.ModuleTitle);
+                            //If length too long, rename it
+                            if (newModulePath.Length > 240)
+                            {
+                                newModulePath = Path.Combine(courseInfo.FullName,
+                                    module.ModuleIndex + "");
+                            }
+
+                            if (Directory.Exists(moduleHashPath))
+                            {
+                                DirectoryInfo moduleInfo = Directory.Exists(newModulePath)
+                                    ? new DirectoryInfo(newModulePath)
+                                    : Directory.CreateDirectory(newModulePath);
+                                //Decrypt all videos in current module folder
+                                this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName);
+                            }
+                            else
+                            {
+                                //this.AddText("Folder " + moduleHash + " cannot be found in the current course path.", Color.Red, true);
+                                bgwDecrypt.ReportProgress(1, new { Text = "Folder " + moduleHash + " cannot be found in the current course path.", Color = Color.Red, newLine = true });
+                            }
                         }
                     }
+                    //this.AddText("Decryption " + courseItem.course.CourseTitle + " has been completed!", Color.Magenta, true);
+                    bgwDecrypt.ReportProgress(1, new { Text = "Decryption " + courseItem.course.CourseTitle + " has been completed!", Color = Color.Magenta, newLine = true });
                 }
-                //this.AddText("Decryption " + courseItem.course.CourseTitle + " has been completed!", Color.Magenta, true);
-                bgwDecrypt.ReportProgress(1, new { Text = "Decryption " + courseItem.course.CourseTitle + " has been completed!", Color = Color.Magenta, newLine = true });
 
                 if (chkDelete.Checked)
                 {
-                    Directory.Delete(courseItem.coursePath,true);
-                    RemoveCourseInDb(courseItem.coursePath);
+                    try
+                    {
+                        Directory.Delete(courseItem.coursePath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        bgwDecrypt.ReportProgress(1, new { Text = "Delete folder course " + courseItem.course.CourseTitle + " fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                    }
+
+                    try
+                    {
+                        RemoveCourseInDb(courseItem.coursePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.course.CourseTitle + " from Db fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                    }
+
 
                     bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.course.CourseTitle + " success!", Color = Color.Magenta, newLine = true });
                 }
@@ -602,7 +645,7 @@ namespace DecryptPluralSightVideosGUI
             string courseName = GetFolderName(coursePath);
 
             var cmd = DatabaseConnection.CreateCommand();
-            cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName";
+            cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName;pragma foreign_keys=off;";
             cmd.Parameters.Add(new SQLiteParameter("@courseName", courseName));
 
             var reader = cmd.ExecuteNonQuery();
@@ -676,6 +719,8 @@ namespace DecryptPluralSightVideosGUI
             listView1.ResumeLayout();
         }
         #endregion
+
+        
     }
 
     class CourseItem

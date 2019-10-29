@@ -41,6 +41,9 @@
             this.btnCoursePath = new System.Windows.Forms.Button();
             this.btnDBPath = new System.Windows.Forms.Button();
             this.pnlOption = new System.Windows.Forms.Panel();
+            this.btnOpenOutput = new System.Windows.Forms.Button();
+            this.btnOpenDB = new System.Windows.Forms.Button();
+            this.chkDecrypt = new System.Windows.Forms.CheckBox();
             this.chkDelete = new System.Windows.Forms.CheckBox();
             this.chkCreateSub = new System.Windows.Forms.CheckBox();
             this.btnOutput = new System.Windows.Forms.Button();
@@ -69,7 +72,7 @@
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(700, 327);
+            this.listView1.Size = new System.Drawing.Size(794, 363);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
@@ -82,7 +85,7 @@
             // 
             // btnReadCourse
             // 
-            this.btnReadCourse.Location = new System.Drawing.Point(589, 41);
+            this.btnReadCourse.Location = new System.Drawing.Point(682, 41);
             this.btnReadCourse.Name = "btnReadCourse";
             this.btnReadCourse.Size = new System.Drawing.Size(96, 23);
             this.btnReadCourse.TabIndex = 1;
@@ -92,11 +95,11 @@
             // 
             // btnDecypt
             // 
-            this.btnDecypt.Location = new System.Drawing.Point(589, 73);
+            this.btnDecypt.Location = new System.Drawing.Point(682, 74);
             this.btnDecypt.Name = "btnDecypt";
             this.btnDecypt.Size = new System.Drawing.Size(96, 23);
             this.btnDecypt.TabIndex = 2;
-            this.btnDecypt.Text = "Decrypt";
+            this.btnDecypt.Text = "Run";
             this.btnDecypt.UseVisualStyleBackColor = true;
             this.btnDecypt.Click += new System.EventHandler(this.btnDecypt_Click);
             // 
@@ -154,6 +157,9 @@
             // 
             // pnlOption
             // 
+            this.pnlOption.Controls.Add(this.btnOpenOutput);
+            this.pnlOption.Controls.Add(this.btnOpenDB);
+            this.pnlOption.Controls.Add(this.chkDecrypt);
             this.pnlOption.Controls.Add(this.chkDelete);
             this.pnlOption.Controls.Add(this.chkCreateSub);
             this.pnlOption.Controls.Add(this.btnDecypt);
@@ -168,16 +174,48 @@
             this.pnlOption.Controls.Add(this.txtDBPath);
             this.pnlOption.Controls.Add(this.label1);
             this.pnlOption.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlOption.Location = new System.Drawing.Point(0, 327);
+            this.pnlOption.Location = new System.Drawing.Point(0, 363);
             this.pnlOption.MinimumSize = new System.Drawing.Size(700, 108);
             this.pnlOption.Name = "pnlOption";
-            this.pnlOption.Size = new System.Drawing.Size(700, 108);
+            this.pnlOption.Size = new System.Drawing.Size(794, 108);
             this.pnlOption.TabIndex = 10;
+            // 
+            // btnOpenOutput
+            // 
+            this.btnOpenOutput.Location = new System.Drawing.Point(563, 74);
+            this.btnOpenOutput.Name = "btnOpenOutput";
+            this.btnOpenOutput.Size = new System.Drawing.Size(102, 23);
+            this.btnOpenOutput.TabIndex = 17;
+            this.btnOpenOutput.Text = "Open Output Folder";
+            this.btnOpenOutput.UseVisualStyleBackColor = true;
+            this.btnOpenOutput.Click += new System.EventHandler(this.btnOpenOutput_Click);
+            // 
+            // btnOpenDB
+            // 
+            this.btnOpenDB.Location = new System.Drawing.Point(563, 41);
+            this.btnOpenDB.Name = "btnOpenDB";
+            this.btnOpenDB.Size = new System.Drawing.Size(102, 23);
+            this.btnOpenDB.TabIndex = 16;
+            this.btnOpenDB.Text = "Open DB Folder";
+            this.btnOpenDB.UseVisualStyleBackColor = true;
+            this.btnOpenDB.Click += new System.EventHandler(this.btnOpenDB_Click);
+            // 
+            // chkDecrypt
+            // 
+            this.chkDecrypt.AutoSize = true;
+            this.chkDecrypt.Checked = true;
+            this.chkDecrypt.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDecrypt.Location = new System.Drawing.Point(563, 14);
+            this.chkDecrypt.Name = "chkDecrypt";
+            this.chkDecrypt.Size = new System.Drawing.Size(63, 17);
+            this.chkDecrypt.TabIndex = 15;
+            this.chkDecrypt.Text = "Decrypt";
+            this.chkDecrypt.UseVisualStyleBackColor = true;
             // 
             // chkDelete
             // 
             this.chkDelete.AutoSize = true;
-            this.chkDelete.Location = new System.Drawing.Point(635, 14);
+            this.chkDelete.Location = new System.Drawing.Point(728, 14);
             this.chkDelete.Name = "chkDelete";
             this.chkDelete.Size = new System.Drawing.Size(57, 17);
             this.chkDelete.TabIndex = 14;
@@ -189,7 +227,7 @@
             this.chkCreateSub.AutoSize = true;
             this.chkCreateSub.Checked = true;
             this.chkCreateSub.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCreateSub.Location = new System.Drawing.Point(552, 14);
+            this.chkCreateSub.Location = new System.Drawing.Point(645, 14);
             this.chkCreateSub.Name = "chkCreateSub";
             this.chkCreateSub.Size = new System.Drawing.Size(77, 17);
             this.chkCreateSub.TabIndex = 13;
@@ -226,10 +264,10 @@
             // 
             this.pnlLog.Controls.Add(this.rtbLog);
             this.pnlLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlLog.Location = new System.Drawing.Point(703, 3);
+            this.pnlLog.Location = new System.Drawing.Point(803, 3);
             this.pnlLog.MinimumSize = new System.Drawing.Size(400, 0);
             this.pnlLog.Name = "pnlLog";
-            this.pnlLog.Size = new System.Drawing.Size(423, 435);
+            this.pnlLog.Size = new System.Drawing.Size(514, 471);
             this.pnlLog.TabIndex = 11;
             // 
             // rtbLog
@@ -244,7 +282,7 @@
             this.rtbLog.Name = "rtbLog";
             this.rtbLog.ReadOnly = true;
             this.rtbLog.ShowSelectionMargin = true;
-            this.rtbLog.Size = new System.Drawing.Size(423, 435);
+            this.rtbLog.Size = new System.Drawing.Size(514, 471);
             this.rtbLog.TabIndex = 1;
             this.rtbLog.TabStop = false;
             this.rtbLog.Text = "";
@@ -257,7 +295,7 @@
             this.pnlMain.Location = new System.Drawing.Point(3, 3);
             this.pnlMain.MinimumSize = new System.Drawing.Size(700, 430);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(700, 435);
+            this.pnlMain.Size = new System.Drawing.Size(794, 471);
             this.pnlMain.TabIndex = 12;
             // 
             // pnlCourse
@@ -266,7 +304,7 @@
             this.pnlCourse.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlCourse.Location = new System.Drawing.Point(0, 0);
             this.pnlCourse.Name = "pnlCourse";
-            this.pnlCourse.Size = new System.Drawing.Size(700, 327);
+            this.pnlCourse.Size = new System.Drawing.Size(794, 363);
             this.pnlCourse.TabIndex = 11;
             // 
             // bgwDecrypt
@@ -282,7 +320,7 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 700F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 800F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.pnlLog, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pnlMain, 0, 0);
@@ -291,14 +329,14 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1129, 441);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1320, 477);
             this.tableLayoutPanel1.TabIndex = 13;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1129, 441);
+            this.ClientSize = new System.Drawing.Size(1320, 477);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(1145, 480);
@@ -339,6 +377,9 @@
         private System.ComponentModel.BackgroundWorker bgwGetCourse;
         private System.Windows.Forms.CheckBox chkDelete;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.CheckBox chkDecrypt;
+        private System.Windows.Forms.Button btnOpenOutput;
+        private System.Windows.Forms.Button btnOpenDB;
     }
 }
 
