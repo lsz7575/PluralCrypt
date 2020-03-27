@@ -385,10 +385,17 @@ namespace DecryptPluralSightVideosGUI
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        string newPath = Path.Combine(outputPath,
-                            clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
-
-
+                        string newPath = "";
+                        if (clip.ClipIndex < 10)
+                        {
+                            newPath = Path.Combine(outputPath,
+                                 "0" + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
+                        }
+                        else
+                        {
+                            newPath = Path.Combine(outputPath,
+                                clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
+                        }
 
                         // If length too long, rename it
                         if (newPath.Length > 240)
