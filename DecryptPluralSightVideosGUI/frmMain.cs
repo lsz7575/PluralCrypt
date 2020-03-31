@@ -20,10 +20,8 @@ namespace DecryptPluralSightVideosGUI
     public partial class frmMain : Form
     {
         private List<CourseItem> listCourse;
-        private char[] InvalidFileCharacters = Path.GetInvalidFileNameChars();
+        private readonly char[] InvalidFileCharacters = Path.GetInvalidFileNameChars();
         private SQLiteConnection DatabaseConnection;
-        SemaphoreSlim Semaphore = new SemaphoreSlim(5);
-        object SemaphoreLock = new object();
 
         public frmMain()
         {
@@ -37,6 +35,8 @@ namespace DecryptPluralSightVideosGUI
                 strPluralsightPath = Directory.Exists(strPluralsightPath) ? strPluralsightPath : "";
                 Settings.Default.PluralsightPath = strPluralsightPath;
             }
+            else
+                strPluralsightPath = Directory.Exists(Settings.Default.PluralsightPath) ? Settings.Default.PluralsightPath : "";
 
             txtCoursePath.Text = Directory.Exists(strPluralsightPath) ? strPluralsightPath + @"\courses" : "";
             txtDBPath.Text = Directory.Exists(strPluralsightPath) ? strPluralsightPath + @"\pluralsight.db" : "";
@@ -55,7 +55,7 @@ namespace DecryptPluralSightVideosGUI
             bgwGetCourse.RunWorkerCompleted += BgwGetCourse_RunWorkerCompleted;
         }
 
-        
+
 
         #region BackgroundWorker
         private void BgwGetCourse_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -80,7 +80,7 @@ namespace DecryptPluralSightVideosGUI
 
         private void BgwGetCourse_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            ReadCourse(txtCoursePath.Text,txtDBPath.Text);
+            ReadCourse(txtCoursePath.Text, txtDBPath.Text);
 
             if (bgwGetCourse.CancellationPending)
             {
@@ -88,7 +88,6 @@ namespace DecryptPluralSightVideosGUI
                 // knows that the process was cancelled.
                 e.Cancel = true;
                 bgwGetCourse.ReportProgress(0);
-                return;
             }
         }
 
@@ -120,7 +119,6 @@ namespace DecryptPluralSightVideosGUI
                 // knows that the process was cancelled.
                 e.Cancel = true;
                 bgwDecrypt.ReportProgress(0);
-                return;
             }
         }
 
@@ -147,6 +145,8 @@ namespace DecryptPluralSightVideosGUI
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 txtOutputPath.Text = folderBrowserDialog.SelectedPath;
+                Settings.Default.DecryptPath = txtOutputPath.Text;
+                Settings.Default.Save();
             }
         }
 
@@ -197,7 +197,7 @@ namespace DecryptPluralSightVideosGUI
         {
             SelectedListViewItemCollection list = (sender as ListView).SelectedItems;
             if (list.Count == 0) return;
-            list[0].Checked = list[0].Checked ? false : true;
+            list[0].Checked = !list[0].Checked;
         }
 
         private void btnOpenDB_Click(object sender, EventArgs e)
@@ -240,7 +240,7 @@ namespace DecryptPluralSightVideosGUI
 
                     listCourse = folderList.Select(r => new CourseItem() { coursePath = r, course = this.GetCourseFromDb(r) }).Where(r => r.course != null).OrderBy(r => r.course.CourseTitle).ToList();
 
-                    listCourse = listCourse.Where(r => Directory.GetFiles(r.coursePath,"*.psv",SearchOption.AllDirectories).Length == r.course.NumOfVideo).ToList();
+                    listCourse = listCourse.Where(r => Directory.GetFiles(r.coursePath, "*.psv", SearchOption.AllDirectories).Length == r.course.NumOfVideo).ToList();
 
                     foreach (CourseItem item in listCourse)
                     {
@@ -333,12 +333,10 @@ namespace DecryptPluralSightVideosGUI
                             }
                             else
                             {
-                                //this.AddText("Folder " + moduleHash + " cannot be found in the current course path.", Color.Red, true);
                                 bgwDecrypt.ReportProgress(1, new { Text = "Folder " + moduleHash + " cannot be found in the current course path.", Color = Color.Red, newLine = true });
                             }
                         }
                     }
-                    //this.AddText("Decryption " + courseItem.course.CourseTitle + " has been completed!", Color.Magenta, true);
                     bgwDecrypt.ReportProgress(1, new { Text = "Decryption " + courseItem.course.CourseTitle + " has been completed!", Color = Color.Magenta, newLine = true });
                 }
 
@@ -385,17 +383,8 @@ namespace DecryptPluralSightVideosGUI
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        string newPath = "";
-                        if (clip.ClipIndex < 10)
-                        {
-                            newPath = Path.Combine(outputPath,
-                                 "0" + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
-                        }
-                        else
-                        {
-                            newPath = Path.Combine(outputPath,
-                                clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
-                        }
+                        string newPath;
+                        newPath = Path.Combine(outputPath, (clip.ClipIndex < 10 ? "" : "0") + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
 
                         // If length too long, rename it
                         if (newPath.Length > 240)
@@ -411,7 +400,6 @@ namespace DecryptPluralSightVideosGUI
 
                         string fileName = Path.GetFileName(currPath);
 
-                        //this.AddText($"Start to Decrypt File \"{fileName}\"", Color.Yellow);
                         bgwDecrypt.ReportProgress(1, new { Text = $"Start to Decrypt File \"{fileName}\"", Color = Color.Yellow, newLine = false });
 
                         this.DecryptVideo(iStream, newPath);
@@ -421,14 +409,12 @@ namespace DecryptPluralSightVideosGUI
                             this.WriteTranscriptFile(clip, newPath);
                         }
 
-                        //this.AddText($"Decryption File \"{Path.GetFileName(newPath)}\" successfully", Color.Green, true);
                         bgwDecrypt.ReportProgress(1, new { Text = $"Decryption File \"{Path.GetFileName(newPath)}\" successfully", Color = Color.Green, newLine = true });
                         playingFileStream.Dispose();
 
                     }
                     else
                     {
-                        //this.AddText($"File \"{Path.GetFileName(currPath)}\"  cannot be found ", Color.Gray, true);
                         bgwDecrypt.ReportProgress(1, new { Text = $"File \"{Path.GetFileName(currPath)}\"  cannot be found", Color = Color.Gray, newLine = true });
 
                     }
@@ -481,7 +467,7 @@ namespace DecryptPluralSightVideosGUI
                     bgwDecrypt.ReportProgress(1, new { Text = $"Transcript of " + Path.GetFileName(clipPath) + " has been generated scucessfully.", Color = Color.Purple, newLine = false });
                 }
             }
-        } 
+        }
         #endregion
 
         #region DB
@@ -635,15 +621,15 @@ namespace DecryptPluralSightVideosGUI
                     DatabaseConnection = new SQLiteConnection($"Data Source={dbPath}; Version=3;FailIfMissing=True");
                     DatabaseConnection.Open();
                     //this.AddText("The Database Connection has been open completely.", Color.Green, true);
-                    bgwGetCourse.ReportProgress(1, new Log() {Text = "The Database Connection has been open completely.", TextColor =  Color.Green, NewLine = true });
+                    bgwGetCourse.ReportProgress(1, new Log() { Text = "The Database Connection has been open completely.", TextColor = Color.Green, NewLine = true });
                     return true;
                 }
                 //this.AddText("The database file isn't corrected.", Color.Red);
-                bgwGetCourse.ReportProgress(1, new Log() { Text = "The database file isn't corrected.", TextColor =  Color.Red});
+                bgwGetCourse.ReportProgress(1, new Log() { Text = "The database file isn't corrected.", TextColor = Color.Red });
                 return false;
             }
             //this.AddText("Cannot find the database path.", Color.Red);
-            bgwGetCourse.ReportProgress(1, new Log() {Text = "Cannot find the database path.", TextColor =  Color.Red });
+            bgwGetCourse.ReportProgress(1, new Log() { Text = "Cannot find the database path.", TextColor = Color.Red });
             return false;
         }
 
@@ -660,6 +646,7 @@ namespace DecryptPluralSightVideosGUI
             return reader > 0;
         }
         #endregion
+
         #region Util
         /// <summary>
         /// Clean the input string and remove all invalid chars
@@ -718,7 +705,7 @@ namespace DecryptPluralSightVideosGUI
 
         public void AddListView(ListViewItem item, Image img)
         {
-            imgList.Images.Add(item.ImageKey,img);
+            imgList.Images.Add(item.ImageKey, img);
             listView1.Items.Add(item);
 
             listView1.SuspendLayout();
@@ -727,7 +714,7 @@ namespace DecryptPluralSightVideosGUI
         }
         #endregion
 
-        
+
     }
 
     class CourseItem
