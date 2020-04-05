@@ -93,6 +93,8 @@ namespace DecryptPluralSightVideosGUI
         private void BgwGetCourse_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             pnlMain.Enabled = true;
+            chkStartModuleIndexAt1.Enabled = true;
+            chkStartClipIndexAt1.Enabled = true;
             Cursor.Current = Cursors.Default;
         }
 
@@ -124,6 +126,8 @@ namespace DecryptPluralSightVideosGUI
         private void BgwDecrypt_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             pnlMain.Enabled = true;
+            chkStartModuleIndexAt1.Enabled = true;
+            chkStartClipIndexAt1.Enabled = true;
             Cursor.Current = Cursors.Default;
         }
         #endregion
@@ -164,6 +168,8 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 pnlMain.Enabled = false;
+                chkStartModuleIndexAt1.Enabled = false;
+                chkStartClipIndexAt1.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
                 listView1.Items.Clear();
                 imgList.Images.Clear();
@@ -182,6 +188,8 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 pnlMain.Enabled = false;
+                chkStartModuleIndexAt1.Enabled = false;
+                chkStartClipIndexAt1.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
 
                 List<ListViewItem> lstCourse = listView1.CheckedItems.Cast<ListViewItem>().ToList();
@@ -302,6 +310,8 @@ namespace DecryptPluralSightVideosGUI
                     
                     if (listModules.Count > 0)
                     {
+                        // integer to add 1 if index should start at 1
+                        int startAt1 = Convert.ToInt16(chkStartModuleIndexAt1.Checked);
                         //Get each module
                         foreach (Module module in listModules)
                         {
@@ -311,12 +321,12 @@ namespace DecryptPluralSightVideosGUI
                             string moduleHashPath = Path.Combine(courseItem.coursePath, moduleHash);
                             //Create new module path with decryption name
                             string newModulePath = Path.Combine(courseInfo.FullName, 
-                                (module.ModuleIndex < 10 ? "0" : "") + module.ModuleIndex + ". " + module.ModuleTitle);
+                                (module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + ". " + module.ModuleTitle);
                             //If length too long, rename it
                             if (newModulePath.Length > 240)
                             {
                                 newModulePath = Path.Combine(courseInfo.FullName, 
-                                    (module.ModuleIndex < 10 ? "0" : "") + module.ModuleIndex + "");
+                                    (module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + "");
                             }
 
                             if (Directory.Exists(moduleHashPath))
@@ -372,6 +382,8 @@ namespace DecryptPluralSightVideosGUI
 
             if (listClips.Count > 0)
             {
+                // integer to add 1 if index should start at 1
+                int startAt1 = Convert.ToInt16(chkStartClipIndexAt1.Checked);
                 foreach (Clip clip in listClips)
                 {
                     // Get current path of the encrypted video
@@ -379,13 +391,14 @@ namespace DecryptPluralSightVideosGUI
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        string newPath = Path.Combine(outputPath, (clip.ClipIndex < 10 ? "0" : "") + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
+                        string newPath = Path.Combine(outputPath, (clip.ClipIndex < 10 ? "0" : "") + (startAt1 + clip.ClipIndex) + ". " + clip.ClipTitle + ".mp4");
 
                         // If length too long, rename it
                         if (newPath.Length > 240)
                         {
-                            newPath = Path.Combine(outputPath,
-                                clip.ClipIndex + ".mp4");
+                            newPath = Path.Combine(outputPath, 
+                                (clip.ClipIndex < 10 ? "0" : "") +
+                                (startAt1 + clip.ClipIndex) + ".mp4");
                         }
 
                         // Init video and get it from iStream
@@ -520,7 +533,7 @@ namespace DecryptPluralSightVideosGUI
                     ClipId = reader.GetInt32(reader.GetOrdinal("Id")),
                     ClipName = reader.GetString(reader.GetOrdinal("Name")),
                     ClipTitle = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    ClipIndex = reader.GetInt32(reader.GetOrdinal("ClipIndex")),
+                    ClipIndex = reader.GetInt32(reader.GetOrdinal("ClipIndex")) ,
                     Subtitle = GetTrasncriptFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
                 };
                 list.Add(clip);
