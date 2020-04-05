@@ -341,7 +341,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(1145, 480);
             this.Name = "frmMain";
-            this.Text = "Decrypt Plural Sight Videos GUI";
+            this.Text = "Decrypt Pluralsight Videos GUI";
             this.pnlOption.ResumeLayout(false);
             this.pnlOption.PerformLayout();
             this.pnlLog.ResumeLayout(false);
