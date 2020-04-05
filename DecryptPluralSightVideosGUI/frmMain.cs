@@ -321,12 +321,12 @@ namespace DecryptPluralSightVideosGUI
                             string moduleHashPath = Path.Combine(courseItem.coursePath, moduleHash);
                             //Create new module path with decryption name
                             string newModulePath = Path.Combine(courseInfo.FullName, 
-                                (module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + ". " + module.ModuleTitle);
+                                (startAt1 + module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + ". " + module.ModuleTitle);
                             //If length too long, rename it
                             if (newModulePath.Length > 240)
                             {
                                 newModulePath = Path.Combine(courseInfo.FullName, 
-                                    (module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + "");
+                                    (startAt1 + module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + "");
                             }
 
                             if (Directory.Exists(moduleHashPath))
@@ -391,13 +391,13 @@ namespace DecryptPluralSightVideosGUI
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        string newPath = Path.Combine(outputPath, (clip.ClipIndex < 10 ? "0" : "") + (startAt1 + clip.ClipIndex) + ". " + clip.ClipTitle + ".mp4");
+                        string newPath = Path.Combine(outputPath, (startAt1 + clip.ClipIndex < 10 ? "0" : "") + (startAt1 + clip.ClipIndex) + ". " + clip.ClipTitle + ".mp4");
 
                         // If length too long, rename it
                         if (newPath.Length > 240)
                         {
                             newPath = Path.Combine(outputPath, 
-                                (clip.ClipIndex < 10 ? "0" : "") +
+                                (startAt1 + clip.ClipIndex < 10 ? "0" : "") +
                                 (startAt1 + clip.ClipIndex) + ".mp4");
                         }
 
