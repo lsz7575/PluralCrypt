@@ -314,6 +314,7 @@
             // 
             // chkStartModuleIndexAt1
             // 
+            this.chkStartModuleIndexAt1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkStartModuleIndexAt1.AutoSize = true;
             this.chkStartModuleIndexAt1.Checked = true;
             this.chkStartModuleIndexAt1.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -351,6 +352,7 @@
             // 
             // chkStartClipIndexAt1
             // 
+            this.chkStartClipIndexAt1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkStartClipIndexAt1.AutoSize = true;
             this.chkStartClipIndexAt1.Checked = true;
             this.chkStartClipIndexAt1.CheckState = System.Windows.Forms.CheckState.Checked;
