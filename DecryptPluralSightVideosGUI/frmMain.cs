@@ -31,18 +31,25 @@ namespace DecryptPluralSightVideosGUI
             else
                 appSetting = new AppSetting();
 
-            if (string.IsNullOrEmpty(appSetting.DatabasePath))
+            if (string.IsNullOrEmpty(appSetting.CoursePath))
             {
-                appSetting.DatabasePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Pluralsight";
-                if (!Directory.Exists(appSetting.DatabasePath))
-                    appSetting.DatabasePath = string.Empty;
+                appSetting.CoursePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Pluralsight";
+                if (!Directory.Exists(appSetting.CoursePath))
+                    appSetting.CoursePath = string.Empty;
+
+                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\courses" : "";
+                txtDBPath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\pluralsight.db" : "";
+                txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
             }
             else
-                appSetting.DatabasePath = Directory.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath : "";
+            {
+                appSetting.CoursePath = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
+                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
+                txtDBPath.Text = File.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath : "";
+                txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
+            }
 
-            txtCoursePath.Text = Directory.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath + @"\courses" : "";
-            txtDBPath.Text = Directory.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath + @"\pluralsight.db" : "";
-            txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
+
 
             chkDecrypt.Checked = appSetting.Decrypt;
             chkCreateSub.Checked = appSetting.CreateSub;

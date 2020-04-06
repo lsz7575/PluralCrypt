@@ -91,7 +91,7 @@
             this.btnReadCourse.Location = new System.Drawing.Point(591, 74);
             this.btnReadCourse.Name = "btnReadCourse";
             this.btnReadCourse.Size = new System.Drawing.Size(96, 23);
-            this.btnReadCourse.TabIndex = 1;
+            this.btnReadCourse.TabIndex = 14;
             this.btnReadCourse.Text = "Read Course";
             this.btnReadCourse.UseVisualStyleBackColor = true;
             this.btnReadCourse.Click += new System.EventHandler(this.btnReadCourse_Click);
@@ -101,7 +101,7 @@
             this.btnDecypt.Location = new System.Drawing.Point(695, 74);
             this.btnDecypt.Name = "btnDecypt";
             this.btnDecypt.Size = new System.Drawing.Size(96, 23);
-            this.btnDecypt.TabIndex = 2;
+            this.btnDecypt.TabIndex = 15;
             this.btnDecypt.Text = "Run";
             this.btnDecypt.UseVisualStyleBackColor = true;
             this.btnDecypt.Click += new System.EventHandler(this.btnDecypt_Click);
@@ -111,14 +111,14 @@
             this.txtCoursePath.Location = new System.Drawing.Point(75, 11);
             this.txtCoursePath.Name = "txtCoursePath";
             this.txtCoursePath.Size = new System.Drawing.Size(327, 20);
-            this.txtCoursePath.TabIndex = 3;
+            this.txtCoursePath.TabIndex = 1;
             // 
             // txtDBPath
             // 
             this.txtDBPath.Location = new System.Drawing.Point(75, 42);
             this.txtDBPath.Name = "txtDBPath";
             this.txtDBPath.Size = new System.Drawing.Size(327, 20);
-            this.txtDBPath.TabIndex = 4;
+            this.txtDBPath.TabIndex = 3;
             // 
             // label1
             // 
@@ -143,7 +143,7 @@
             this.btnCoursePath.Location = new System.Drawing.Point(408, 10);
             this.btnCoursePath.Name = "btnCoursePath";
             this.btnCoursePath.Size = new System.Drawing.Size(75, 23);
-            this.btnCoursePath.TabIndex = 7;
+            this.btnCoursePath.TabIndex = 2;
             this.btnCoursePath.Text = "Browse ....";
             this.btnCoursePath.UseVisualStyleBackColor = true;
             this.btnCoursePath.Click += new System.EventHandler(this.btnCoursePath_Click);
@@ -153,7 +153,7 @@
             this.btnDBPath.Location = new System.Drawing.Point(408, 41);
             this.btnDBPath.Name = "btnDBPath";
             this.btnDBPath.Size = new System.Drawing.Size(75, 23);
-            this.btnDBPath.TabIndex = 8;
+            this.btnDBPath.TabIndex = 4;
             this.btnDBPath.Text = "Browse ....";
             this.btnDBPath.UseVisualStyleBackColor = true;
             this.btnDBPath.Click += new System.EventHandler(this.btnDBPath_Click);
@@ -193,7 +193,7 @@
             this.chkStartModuleIndexAt1.Location = new System.Drawing.Point(681, 45);
             this.chkStartModuleIndexAt1.Name = "chkStartModuleIndexAt1";
             this.chkStartModuleIndexAt1.Size = new System.Drawing.Size(110, 17);
-            this.chkStartModuleIndexAt1.TabIndex = 18;
+            this.chkStartModuleIndexAt1.TabIndex = 13;
             this.chkStartModuleIndexAt1.Text = "Module index at 1";
             this.chkStartModuleIndexAt1.UseVisualStyleBackColor = true;
             // 
@@ -205,7 +205,7 @@
             this.chkStartClipIndexAt1.Location = new System.Drawing.Point(591, 45);
             this.chkStartClipIndexAt1.Name = "chkStartClipIndexAt1";
             this.chkStartClipIndexAt1.Size = new System.Drawing.Size(92, 17);
-            this.chkStartClipIndexAt1.TabIndex = 19;
+            this.chkStartClipIndexAt1.TabIndex = 12;
             this.chkStartClipIndexAt1.Text = "Clip index at 1";
             this.chkStartClipIndexAt1.UseVisualStyleBackColor = true;
             // 
@@ -214,7 +214,7 @@
             this.btnOpenOutput.Location = new System.Drawing.Point(489, 74);
             this.btnOpenOutput.Name = "btnOpenOutput";
             this.btnOpenOutput.Size = new System.Drawing.Size(96, 23);
-            this.btnOpenOutput.TabIndex = 17;
+            this.btnOpenOutput.TabIndex = 8;
             this.btnOpenOutput.Text = "Open Output Folder";
             this.btnOpenOutput.UseVisualStyleBackColor = true;
             this.btnOpenOutput.Click += new System.EventHandler(this.btnOpenOutput_Click);
@@ -224,7 +224,7 @@
             this.btnOpenDB.Location = new System.Drawing.Point(489, 41);
             this.btnOpenDB.Name = "btnOpenDB";
             this.btnOpenDB.Size = new System.Drawing.Size(96, 23);
-            this.btnOpenDB.TabIndex = 16;
+            this.btnOpenDB.TabIndex = 7;
             this.btnOpenDB.Text = "Open DB Folder";
             this.btnOpenDB.UseVisualStyleBackColor = true;
             this.btnOpenDB.Click += new System.EventHandler(this.btnOpenDB_Click);
@@ -237,7 +237,7 @@
             this.chkDecrypt.Location = new System.Drawing.Point(489, 13);
             this.chkDecrypt.Name = "chkDecrypt";
             this.chkDecrypt.Size = new System.Drawing.Size(63, 17);
-            this.chkDecrypt.TabIndex = 15;
+            this.chkDecrypt.TabIndex = 9;
             this.chkDecrypt.Text = "Decrypt";
             this.chkDecrypt.UseVisualStyleBackColor = true;
             // 
@@ -247,7 +247,7 @@
             this.chkDelete.Location = new System.Drawing.Point(681, 15);
             this.chkDelete.Name = "chkDelete";
             this.chkDelete.Size = new System.Drawing.Size(57, 17);
-            this.chkDelete.TabIndex = 14;
+            this.chkDelete.TabIndex = 11;
             this.chkDelete.Text = "Delete";
             this.chkDelete.UseVisualStyleBackColor = true;
             // 
@@ -259,7 +259,7 @@
             this.chkCreateSub.Location = new System.Drawing.Point(591, 13);
             this.chkCreateSub.Name = "chkCreateSub";
             this.chkCreateSub.Size = new System.Drawing.Size(77, 17);
-            this.chkCreateSub.TabIndex = 13;
+            this.chkCreateSub.TabIndex = 10;
             this.chkCreateSub.Text = "Create sub";
             this.chkCreateSub.UseVisualStyleBackColor = true;
             // 
@@ -268,7 +268,7 @@
             this.btnOutput.Location = new System.Drawing.Point(408, 74);
             this.btnOutput.Name = "btnOutput";
             this.btnOutput.Size = new System.Drawing.Size(75, 23);
-            this.btnOutput.TabIndex = 12;
+            this.btnOutput.TabIndex = 6;
             this.btnOutput.Text = "Browse ....";
             this.btnOutput.UseVisualStyleBackColor = true;
             this.btnOutput.Click += new System.EventHandler(this.btnOutput_Click);
@@ -287,7 +287,7 @@
             this.txtOutputPath.Location = new System.Drawing.Point(75, 75);
             this.txtOutputPath.Name = "txtOutputPath";
             this.txtOutputPath.Size = new System.Drawing.Size(327, 20);
-            this.txtOutputPath.TabIndex = 10;
+            this.txtOutputPath.TabIndex = 5;
             // 
             // pnlLog
             // 
