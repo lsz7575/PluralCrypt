@@ -158,12 +158,12 @@ namespace DecryptPluralSightVideos
                             string moduleHashPath = Path.Combine(coursePath, moduleHash);
                             // Create new module path with decryption name
                             string newModulePath = Path.Combine(courseInfo.FullName,
-                                module.ModuleIndex + ". " + module.ModuleTitle);
+                                (module.ModuleIndex < 10 ? "0" : "") + module.ModuleIndex + ". " + module.ModuleTitle);
                             // If length too long, rename it
                             if (newModulePath.Length > 240)
                             {
                                 newModulePath = Path.Combine(courseInfo.FullName,
-                                    module.ModuleIndex + "");
+                                    (module.ModuleIndex < 10 ? "0" : "") + module.ModuleIndex + "");
                             }
 
 							if (Directory.Exists(moduleHashPath))
@@ -177,13 +177,13 @@ namespace DecryptPluralSightVideos
                             else
                             {
                                 WriteToConsole(
-                                    "Foler " + moduleHash +
+                                    "Folder " + moduleHash +
                                     " cannot be found in the current course path.",
                                     ConsoleColor.Red);
                             }
                         }
                     }
-                    WriteToConsole("Decryption " + course.CourseTitle + " has been completed!", ConsoleColor.Magenta);
+                    WriteToConsole("\"" + course.CourseTitle + "\" complete!", ConsoleColor.Magenta);
                 }
             }
         }
@@ -242,11 +242,11 @@ namespace DecryptPluralSightVideos
         /// <param name="folderPath">Current module folder</param>
         /// <param name="moduleId">Module Id</param>
         /// <param name="outputPath">Destination of output video</param>
-        public void DecryptAllVideos(string folderPath, Module module, string outputPath)
+        public void DecryptAllVideos(string folderPath, Module moduleId, string outputPath)
         {
             
             // Get all clips of this module from database
-            List<Clip> listClips = module.Clips;
+            List<Clip> listClips = moduleId.Clips;
 
 			if (listClips.Count > 0)
             {
@@ -257,34 +257,24 @@ namespace DecryptPluralSightVideos
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        string newPath = "";
-                        if (clip.ClipIndex < 10)
-                        {
-                            newPath = Path.Combine(outputPath,
-                                 "0" + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
-                        }
-                        else
-                        {
-                            newPath = Path.Combine(outputPath,
-                                clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
-                        }
+                        var newPath = Path.Combine(outputPath,
+                            (clip.ClipIndex < 10)? "0":"" + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
 
-                        // If length too long, rename it
+                            // If length too long, rename it
                         if (newPath.Length > 240)
                         {
                             newPath = Path.Combine(outputPath,
                                 clip.ClipIndex + ".mp4");
                         }
 
-                        // Init video and get it from istream
-                        IStream iStream;
-						var playingFileStream = new VirtualFileStream(currPath);
-                        playingFileStream.Clone(out iStream);
+                        // Init video and get it from iStream
+                        var playingFileStream = new VirtualFileStream(currPath);
+                        playingFileStream.Clone(out var iStream);
 
                         string fileName = Path.GetFileName(currPath);
 
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("Start to Decrypt File \"{0}\"", fileName);
+                        Console.WriteLine($"Start to decrypt File \"{fileName}\"");
                         Console.ForegroundColor = color_default;
 
                         DecryptVideo(iStream, newPath);
@@ -296,7 +286,7 @@ namespace DecryptPluralSightVideos
                         //Semaphore.Wait();
                         //TaskList.Add(Task.Run(() =>
                         //{
-                        //    // Write the decrypted video from istream to new file mp4
+                        //    // Write the decrypted video from iStream to new file mp4
                         //    DecryptVideo(iStream, newPath);
                         //    if (Options.CreateTranscript)
                         //    {
@@ -309,13 +299,13 @@ namespace DecryptPluralSightVideos
                         //    }
                         //}));
 
-                        WriteToConsole($"Decryption File \"{Path.GetFileName(newPath)}\" successfully ", ConsoleColor.Green, true);
+                        WriteToConsole($"Decrypt File \"{Path.GetFileName(newPath)}\" success!", ConsoleColor.Green, true);
                         playingFileStream.Dispose();
 
                     }
                     else
                     {
-                        WriteToConsole($"File \"{Path.GetFileName(currPath)}\"  cannot be found ", ConsoleColor.Gray, true);
+                        WriteToConsole($"File \"{Path.GetFileName(currPath)}\" cannot be found.", ConsoleColor.Gray, true);
                     }
                 }
             }
@@ -326,10 +316,10 @@ namespace DecryptPluralSightVideos
         /// </summary>
         /// <param name="clipId">Clip Id</param>
         /// <param name="clipPath">Path of current clip</param>
-        public void WriteTranscriptFile(Clip clip, string clipPath)
+        public void WriteTranscriptFile(Clip clipId, string clipPath)
         {
             // Get all transcript to list
-            List<ClipTranscript> clipTranscripts = clip.Subtitle;
+            List<ClipTranscript> clipTranscripts = clipId.Subtitle;
 
             if (clipTranscripts.Count > 0)
             {
@@ -351,7 +341,7 @@ namespace DecryptPluralSightVideos
                         writer.WriteLine();
                     }
                     writer.Close();
-                    WriteToConsole("Transcript of " + Path.GetFileName(clipPath) + " has been generated scucessfully.",
+                    WriteToConsole("Transcript of " + Path.GetFileName(clipPath) + " generated.",
                         ConsoleColor.Red);
                 }
             }
@@ -359,7 +349,7 @@ namespace DecryptPluralSightVideos
 
         public string RenameIfDuplicated(string path)
         {
-            string newFullPath = Empty;
+            string newFullPath;
             int count = 1;
 
             // If path is file
@@ -489,7 +479,7 @@ namespace DecryptPluralSightVideos
         /// Get all clips information of specified module from database.
         /// </summary>
         /// <param name="moduleId">Module Id</param>
-        /// <returns>List of information about clips belong to specifed module.</returns>
+        /// <returns>List of information about clips belong to specified module.</returns>
         public List<Clip> GetClipsFromDb(int moduleId)
         {
             List<Clip> list = new List<Clip>();
@@ -601,15 +591,15 @@ namespace DecryptPluralSightVideos
                 {
                     DatabaseConnection = new SQLiteConnection($"Data Source={dbPath}; Version=3;FailIfMissing=True");
                     DatabaseConnection.Open();
-                    WriteToConsole("The Database Connection has been open completely." + Environment.NewLine,
+                    WriteToConsole("Database Connection opened." + Environment.NewLine,
                         ConsoleColor.Green);
 
                     return true;
                 }
-                WriteToConsole("The database file isn't corrected.", ConsoleColor.Red);
+                WriteToConsole("File is not a database file.", ConsoleColor.Red);
                 return false;
             }
-            WriteToConsole("Cannot find the database path.", ConsoleColor.Red);
+            WriteToConsole("Invalid file path.", ConsoleColor.Red);
             return false;
         }
         #endregion
