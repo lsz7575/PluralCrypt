@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace DecryptPluralSightVideos.Encryption
 {
-    class VirtualFileCache : IDisposable
+    internal class VirtualFileCache : IDisposable
     {
         private readonly IPsStream encryptedVideoFile;
-        private Task ReadingTask;
 
         public long Length
         {
@@ -35,7 +33,7 @@ namespace DecryptPluralSightVideos.Encryption
             this.encryptedVideoFile.Seek(offset, SeekOrigin.Begin);
             int length = this.encryptedVideoFile.Read(pv, 0, count);
             VideoEncryption.XorBuffer(pv, length, (long)offset);
-            if (!(IntPtr.Zero != pcbRead))
+            if (IntPtr.Zero == pcbRead)
                 return;
             Marshal.WriteIntPtr(pcbRead, new IntPtr(length));
         }
