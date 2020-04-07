@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1D117714-A0FB-4186-8E2C-349B9BDB45E3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>DecryptPluralSightVideos</RootNamespace>
     <AssemblyName>DecryptPluralSightVideos</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
