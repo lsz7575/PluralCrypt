@@ -110,8 +110,6 @@ namespace DecryptPluralSightVideosGUI
         private void BgwGetCourse_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             pnlMain.Enabled = true;
-            chkStartModuleIndexAt1.Enabled = true;
-            chkStartClipIndexAt1.Enabled = true;
             Cursor.Current = Cursors.Default;
         }
 
@@ -143,8 +141,6 @@ namespace DecryptPluralSightVideosGUI
         private void BgwDecrypt_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             pnlMain.Enabled = true;
-            chkStartModuleIndexAt1.Enabled = true;
-            chkStartClipIndexAt1.Enabled = true;
             Cursor.Current = Cursors.Default;
         }
         #endregion
@@ -205,8 +201,6 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 pnlMain.Enabled = false;
-                chkStartModuleIndexAt1.Enabled = false;
-                chkStartClipIndexAt1.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
                 listView1.Items.Clear();
                 imgList.Images.Clear();
@@ -225,8 +219,6 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 pnlMain.Enabled = false;
-                chkStartModuleIndexAt1.Enabled = false;
-                chkStartClipIndexAt1.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
 
                 List<ListViewItem> lstCourse = listView1.CheckedItems.Cast<ListViewItem>().ToList();
@@ -733,11 +725,11 @@ namespace DecryptPluralSightVideosGUI
             {
                 if (Directory.Exists(folderPath))
                 {
-                    return folderPath.Substring(folderPath.LastIndexOf(@"\") + 1);
+                    return folderPath.Substring(folderPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1);
                 }
                 throw new DirectoryNotFoundException();
             }
-            return folderPath.Substring(folderPath.LastIndexOf(@"\") + 1);
+            return folderPath.Substring(folderPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1);
         }
 
         public void AddText(string text, Color color, bool newLine = false)
