@@ -104,7 +104,7 @@
             this.btnDecypt.TabIndex = 15;
             this.btnDecypt.Text = "Run";
             this.btnDecypt.UseVisualStyleBackColor = true;
-            this.btnDecypt.Click += new System.EventHandler(this.btnDecypt_Click);
+            this.btnDecypt.Click += new System.EventHandler(this.btnDecrypt_Click);
             // 
             // txtCoursePath
             // 
