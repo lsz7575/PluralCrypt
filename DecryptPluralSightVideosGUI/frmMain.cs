@@ -293,7 +293,7 @@ namespace DecryptPluralSightVideosGUI
 
                     folderList = folderList.Where(r => Directory.GetDirectories(r, "*", SearchOption.TopDirectoryOnly).Length > 0).ToList();
 
-                    listCourse = folderList.Select(r => new CourseItem() { CoursePath = r, Course = this.GetCourseFromDb(r) }).Where(r => r.Course != null).OrderBy(r => r.Course.CourseTitle).ToList();
+                    listCourse = folderList.Select(r => new CourseItem() { CoursePath = r, Course = this.GetCourseFromDb(r) }).Where(r => r.Course != null).OrderBy(r => r.Course.Title).ToList();
 
                     listCourse = listCourse.Where(r => Directory.GetFiles(r.CoursePath, "*.psv", SearchOption.AllDirectories).Length == r.Course.NumOfVideo).ToList();
 
@@ -301,7 +301,7 @@ namespace DecryptPluralSightVideosGUI
                     {
                         Image img = File.Exists(item.CoursePath + @"\image.jpg") ? Image.FromFile(item.CoursePath + @"\image.jpg") : new Bitmap(100, 100);
 
-                        ListViewItem listItem = new ListViewItem() { ImageKey = item.Course.CourseName, Name = item.Course.CourseName, Text = item.Course.CourseTitle };
+                        ListViewItem listItem = new ListViewItem() { ImageKey = item.Course.Name, Name = item.Course.Name, Text = item.Course.Title };
 
                         bgwGetCourse.ReportProgress(1, new { Item = listItem, Image = img });
                     }
@@ -338,14 +338,14 @@ namespace DecryptPluralSightVideosGUI
 
             foreach (ListViewItem item in list)
             {
-                CourseItem courseItem = listCourse.Where(r => r.Course.CourseName == item.Name).Select(r => r).FirstOrDefault();
+                CourseItem courseItem = listCourse.Where(r => r.Course.Name == item.Name).Select(r => r).FirstOrDefault();
 
                 if (chkDecrypt.Checked)
                 {
-                    bgwDecrypt.ReportProgress(1, new { Text = "Start to decrypt course \"" + courseItem.Course.CourseTitle + "\"", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new { Text = $"Start to decrypt course \"{courseItem.Course.Title}\"", Color = Color.Magenta, newLine = true });
 
                     //Create new course path with the output path
-                    var newCoursePath = Path.Combine(txtOutputPath.Text, this.CleanName(courseItem.Course.CourseTitle));
+                    var newCoursePath = Path.Combine(txtOutputPath.Text, this.CleanName(courseItem.Course.Title));
 
                     DirectoryInfo courseInfo = Directory.Exists(newCoursePath)
                         ? new DirectoryInfo(newCoursePath)
@@ -363,12 +363,11 @@ namespace DecryptPluralSightVideosGUI
                         foreach (Module module in listModules)
                         {
                             //Generate module hash name
-                            string moduleHash = this.ModuleHash(module.ModuleName, module.AuthorHandle);
+                            string moduleHash = this.ModuleHash(module.Name, module.AuthorHandle);
                             //Generate module path
                             string moduleHashPath = Path.Combine(courseItem.CoursePath, moduleHash);
                             //Create new module path with decryption name
-                            string newModulePath = Path.Combine(courseInfo.FullName,
-                                (startAt1 + module.ModuleIndex < 10 ? "0" : "") + (startAt1 + module.ModuleIndex) + ". " + module.ModuleTitle);
+                            string newModulePath = Path.Combine(courseInfo.FullName, $"{(startAt1 + module.Index):00}. {module.Title}.mp4");
 
                             if (Directory.Exists(moduleHashPath))
                             {
@@ -380,11 +379,11 @@ namespace DecryptPluralSightVideosGUI
                             }
                             else
                             {
-                                bgwDecrypt.ReportProgress(1, new { Text = "Folder " + moduleHash + " cannot be found in the current course path.", Color = Color.Red, newLine = true });
+                                bgwDecrypt.ReportProgress(1, new { Text = $"Folder {moduleHash} not found in the current course path", Color = Color.Red, newLine = true });
                             }
                         }
                     }
-                    bgwDecrypt.ReportProgress(1, new { Text = "\"" + courseItem.Course.CourseTitle + "\" complete!", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new { Text = $"\"{courseItem.Course.Title}\" complete!", Color = Color.Magenta, newLine = true });
                 }
 
                 if (chkDelete.Checked)
@@ -395,7 +394,7 @@ namespace DecryptPluralSightVideosGUI
                     }
                     catch (Exception ex)
                     {
-                        bgwDecrypt.ReportProgress(1, new { Text = "Delete folder course " + courseItem.Course.CourseTitle + " fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new { Text = $"Delete folder course {courseItem.Course.Title} fail\n{ex.Message}", Color = Color.Gray, newLine = true });
                     }
 
                     try
@@ -404,11 +403,11 @@ namespace DecryptPluralSightVideosGUI
                     }
                     catch (Exception ex)
                     {
-                        bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.Course.CourseTitle + " from Db fail!" + Environment.NewLine + ex.Message, Color = Color.Gray, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new { Text = $"Delete course {courseItem.Course.Title} from db fail\n{ex.Message}", Color = Color.Gray, newLine = true });
                     }
 
 
-                    bgwDecrypt.ReportProgress(1, new { Text = "Delete course " + courseItem.Course.CourseTitle + " success!", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new { Text = $"Delete course {courseItem.Course.Title} success!", Color = Color.Magenta, newLine = true });
                 }
             }
 
@@ -428,11 +427,11 @@ namespace DecryptPluralSightVideosGUI
                 foreach (Clip clip in listClips)
                 {
                     // Get current path of the encrypted video
-                    string currentPath = Path.Combine(folderPath, clip.ClipName + ".psv");
+                    string currentPath = Path.Combine(folderPath, $"{clip.Name}.psv");
                     if (File.Exists(currentPath))
                     {
                         // Create new path with output folder
-                        string newPath = Path.Combine(outputPath, (startAt1 + clip.ClipIndex < 10 ? "0" : "") + (startAt1 + clip.ClipIndex) + ". " + clip.ClipTitle + ".mp4");
+                        string newPath = Path.Combine(outputPath, $"{(startAt1 + clip.Index):00}. {clip.Title}.mp4");
 
                         // Init video and get it from iStream
                         var playingFileStream = new VirtualFileStream(currentPath);
@@ -506,7 +505,7 @@ namespace DecryptPluralSightVideosGUI
                             }
                         }
                     }
-                    bgwDecrypt.ReportProgress(1, new { Text = "Transcript of " + Path.GetFileName(clipPath) + " generated.", Color = Color.Purple, newLine = false });
+                    bgwDecrypt.ReportProgress(1, new { Text = $"Transcript of {Path.GetFileName(clipPath)} generated.", Color = Color.Purple, newLine = false });
                 }
             }
         }
@@ -566,10 +565,10 @@ namespace DecryptPluralSightVideosGUI
             {
                 Clip clip = new Clip
                 {
-                    ClipId = reader.GetInt32(reader.GetOrdinal("Id")),
-                    ClipName = reader.GetString(reader.GetOrdinal("Name")),
-                    ClipTitle = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    ClipIndex = reader.GetInt32(reader.GetOrdinal("ClipIndex")),
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                    Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
+                    Index = reader.GetInt32(reader.GetOrdinal("ClipIndex")),
                     Subtitle = GetTranscriptFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
                 };
                 list.Add(clip);
@@ -599,11 +598,11 @@ namespace DecryptPluralSightVideosGUI
             {
                 Module module = new Module
                 {
-                    ModuleId = reader.GetInt32(reader.GetOrdinal("Id")),
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
                     AuthorHandle = reader.GetString(reader.GetOrdinal("AuthorHandle")),
-                    ModuleName = reader.GetString(reader.GetOrdinal("Name")),
-                    ModuleTitle = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    ModuleIndex = reader.GetInt32(reader.GetOrdinal("ModuleIndex")),
+                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                    Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
+                    Index = reader.GetInt32(reader.GetOrdinal("ModuleIndex")),
                     Clips = GetClipsFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
                 };
                 list.Add(module);
@@ -635,8 +634,8 @@ namespace DecryptPluralSightVideosGUI
             {
                 course = new Course
                 {
-                    CourseName = reader.GetString(reader.GetOrdinal("Name")),
-                    CourseTitle = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
+                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                    Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
                     HasTranscript = reader.GetInt32(reader.GetOrdinal("HasTranscript")),
                     Modules = GetModulesFromDb(reader.GetString(reader.GetOrdinal("Name")))
                 };
@@ -735,7 +734,7 @@ namespace DecryptPluralSightVideosGUI
         public void AddText(string text, Color color, bool newLine = false)
         {
             rtbLog.SelectionColor = color;
-            rtbLog.AppendText(text + "\n");
+            rtbLog.AppendText($"{text}\n");
             if (newLine) rtbLog.AppendText("\n");
 
             rtbLog.SelectionStart = rtbLog.Text.Length;

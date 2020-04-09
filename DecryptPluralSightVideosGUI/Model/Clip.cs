@@ -4,10 +4,10 @@ namespace DecryptPluralSightVideosGUI.Model
 {
     public class Clip
     {
-        public string ClipName { get; set; }
-        public string ClipTitle { get; set; }
-        public int ClipId { get; set; }
-        public int ClipIndex { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public int Id { get; set; }
+        public int Index { get; set; }
         public List<ClipTranscript> Subtitle { get; set; }
 
         public Clip()
