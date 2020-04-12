@@ -367,7 +367,7 @@ namespace DecryptPluralSightVideosGUI
                             //Generate module path
                             string moduleHashPath = Path.Combine(courseItem.CoursePath, moduleHash);
                             //Create new module path with decryption name
-                            string newModulePath = Path.Combine(courseInfo.FullName, $"{(startAt1 + module.Index):00}. {module.Title}.mp4");
+                            string newModulePath = Path.Combine(courseInfo.FullName, $"{(startAt1 + module.Index):00}. {module.Title}");
 
                             if (Directory.Exists(moduleHashPath))
                             {
