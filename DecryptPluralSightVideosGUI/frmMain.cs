@@ -56,13 +56,15 @@ namespace DecryptPluralSightVideosGUI
             chkDecrypt.Checked = appSetting.Decrypt;
             chkCreateSub.Checked = appSetting.CreateSub;
             chkDelete.Checked = appSetting.DeleteAfterDecrypt;
+            chkShowErrOnly.Checked = appSetting.ShowErrorOnly;
+            chkCopyImage.Checked = appSetting.CopyImage;
             chkStartClipIndexAt1.Checked = appSetting.ClipIndexAtOne;
             chkStartModuleIndexAt1.Checked = appSetting.ModuleIndexAtOne;
             #endregion
 
             imgList.ImageSize = new Size(170, 100);
             imgList.ColorDepth = ColorDepth.Depth32Bit;
-            listView1.LargeImageList = imgList;
+            lsvCourse.LargeImageList = imgList;
 
             bgwDecrypt.DoWork += BgwDecrypt_DoWork;
             bgwDecrypt.ProgressChanged += BgwDecrypt_ProgressChanged;
@@ -85,7 +87,7 @@ namespace DecryptPluralSightVideosGUI
             if (e.UserState.GetType() == typeof(Log))
             {
                 Log log = (Log)(e.UserState);
-                AddText(log.Text, log.TextColor, log.NewLine);
+                AddText(log.Text, log.TextColor, log.NewLine, true);
             }
             else
             {
@@ -121,8 +123,8 @@ namespace DecryptPluralSightVideosGUI
                 return;
             }
 
-            dynamic obj = e.UserState;
-            AddText(obj.Text, obj.Color, obj.newLine);
+            Log obj = e.UserState as Log;
+            AddText(obj.Text, obj.TextColor, obj.NewLine, obj.IsError);
         }
 
         private void BgwDecrypt_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -202,7 +204,7 @@ namespace DecryptPluralSightVideosGUI
             {
                 pnlMain.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
-                listView1.Items.Clear();
+                lsvCourse.Items.Clear();
                 imgList.Images.Clear();
                 rtbLog.Clear();
 
@@ -221,7 +223,7 @@ namespace DecryptPluralSightVideosGUI
                 pnlMain.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
 
-                List<ListViewItem> lstCourse = listView1.CheckedItems.Cast<ListViewItem>().ToList();
+                List<ListViewItem> lstCourse = lsvCourse.CheckedItems.Cast<ListViewItem>().ToList();
                 bgwDecrypt.RunWorkerAsync(lstCourse);
             }
             catch (Exception ex)
@@ -230,7 +232,7 @@ namespace DecryptPluralSightVideosGUI
             }
         }
 
-        private void listView1_ItemActivate(object sender, EventArgs e)
+        private void lsvCourse_ItemActivate(object sender, EventArgs e)
         {
             SelectedListViewItemCollection list = ((ListView)sender).SelectedItems;
             if (list.Count == 0) return;
@@ -261,6 +263,16 @@ namespace DecryptPluralSightVideosGUI
             }
         }
 
+        private void btnSelectAll_Click(object sender, EventArgs e)
+        {
+            lsvCourse.Items.CheckUncheck(true);
+        }
+
+        private void btnDeselectAll_Click(object sender, EventArgs e)
+        {
+            lsvCourse.Items.CheckUncheck(false);
+        }
+
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             appSetting = new AppSetting()
@@ -271,6 +283,8 @@ namespace DecryptPluralSightVideosGUI
                 Decrypt = chkDecrypt.Checked,
                 CreateSub = chkCreateSub.Checked,
                 DeleteAfterDecrypt = chkDelete.Checked,
+                ShowErrorOnly = chkShowErrOnly.Checked,
+                CopyImage = chkCopyImage.Checked,
                 ClipIndexAtOne = chkStartClipIndexAt1.Checked,
                 ModuleIndexAtOne = chkStartModuleIndexAt1.Checked
             };
@@ -342,7 +356,7 @@ namespace DecryptPluralSightVideosGUI
 
                 if (chkDecrypt.Checked)
                 {
-                    bgwDecrypt.ReportProgress(1, new { Text = $"Start to decrypt course \"{courseItem.Course.Title}\"", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new Log { Text = $"Start to decrypt course \"{courseItem.Course.Title}\"", TextColor = Color.Magenta, NewLine = true, IsError = true });
 
                     //Create new course path with the output path
                     var newCoursePath = Path.Combine(txtOutputPath.Text, this.CleanName(courseItem.Course.Title));
@@ -350,6 +364,11 @@ namespace DecryptPluralSightVideosGUI
                     DirectoryInfo courseInfo = Directory.Exists(newCoursePath)
                         ? new DirectoryInfo(newCoursePath)
                         : Directory.CreateDirectory(newCoursePath);
+
+                    if (chkCopyImage.Checked && File.Exists($"{courseItem.CoursePath}\\image.jpg"))
+                    {
+                        File.Copy($"{courseItem.CoursePath}\\image.jpg", $"{newCoursePath}\\image.jpg",true);
+                    }
 
 
                     //Get list all modules in current course
@@ -379,11 +398,11 @@ namespace DecryptPluralSightVideosGUI
                             }
                             else
                             {
-                                bgwDecrypt.ReportProgress(1, new { Text = $"Folder {moduleHash} not found in the current course path", Color = Color.Red, newLine = true });
+                                bgwDecrypt.ReportProgress(1, new Log { Text = $"Folder {moduleHash} not found in the current course path", TextColor = Color.Red, NewLine = true, IsError = true });
                             }
                         }
                     }
-                    bgwDecrypt.ReportProgress(1, new { Text = $"\"{courseItem.Course.Title}\" complete!", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new Log { Text = $"Decrypt \"{courseItem.Course.Title}\" complete!", TextColor = Color.Magenta, NewLine = true, IsError = true });
                 }
 
                 if (chkDelete.Checked)
@@ -394,7 +413,7 @@ namespace DecryptPluralSightVideosGUI
                     }
                     catch (Exception ex)
                     {
-                        bgwDecrypt.ReportProgress(1, new { Text = $"Delete folder course {courseItem.Course.Title} fail\n{ex.Message}", Color = Color.Gray, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete folder course {courseItem.Course.Title} fail\n{ex.Message}", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
 
                     try
@@ -403,11 +422,11 @@ namespace DecryptPluralSightVideosGUI
                     }
                     catch (Exception ex)
                     {
-                        bgwDecrypt.ReportProgress(1, new { Text = $"Delete course {courseItem.Course.Title} from db fail\n{ex.Message}", Color = Color.Gray, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} from db fail\n{ex.Message}", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
 
 
-                    bgwDecrypt.ReportProgress(1, new { Text = $"Delete course {courseItem.Course.Title} success!", Color = Color.Magenta, newLine = true });
+                    bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} success!", TextColor = Color.Magenta, NewLine = true });
                 }
             }
 
@@ -439,7 +458,7 @@ namespace DecryptPluralSightVideosGUI
 
                         string fileName = Path.GetFileName(currentPath);
 
-                        bgwDecrypt.ReportProgress(1, new { Text = $"Start to Decrypt File \"{fileName}\"", Color = Color.Yellow, newLine = false });
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Start to Decrypt File \"{fileName}\"", TextColor = Color.Yellow, NewLine = false });
 
                         this.DecryptVideo(iStream, newPath);
                         if (chkCreateSub.Checked)
@@ -448,13 +467,13 @@ namespace DecryptPluralSightVideosGUI
                             this.WriteTranscriptFile(clip, newPath);
                         }
 
-                        bgwDecrypt.ReportProgress(1, new { Text = $"Decrypt File \"{Path.GetFileName(newPath)}\" success!", Color = Color.Green, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Decrypt File \"{Path.GetFileName(newPath)}\" success!", TextColor = Color.Green, NewLine = true });
                         playingFileStream.Dispose();
 
                     }
                     else
                     {
-                        bgwDecrypt.ReportProgress(1, new { Text = $"File \"{Path.GetFileName(currentPath)}\"  cannot be found", Color = Color.Gray, newLine = true });
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"File \"{Path.GetFileName(currentPath)}\"  cannot be found", TextColor = Color.Gray, NewLine = true, IsError = true });
 
                     }
                 }
@@ -463,12 +482,19 @@ namespace DecryptPluralSightVideosGUI
 
         public void DecryptVideo(IStream currentStream, string newPath)
         {
-            currentStream.Stat(out STATSTG stat, 0);
-            IntPtr myPtr = (IntPtr)0;
-            int streamSize = (int)stat.cbSize;
-            byte[] streamInfo = new byte[streamSize];
-            currentStream.Read(streamInfo, streamSize, myPtr);
-            File.WriteAllBytes(newPath, streamInfo);
+            try
+            {
+                currentStream.Stat(out STATSTG stat, 0);
+                IntPtr myPtr = (IntPtr)0;
+                int streamSize = (int)stat.cbSize;
+                byte[] streamInfo = new byte[streamSize];
+                currentStream.Read(streamInfo, streamSize, myPtr);
+                File.WriteAllBytes(newPath, streamInfo);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -486,29 +512,32 @@ namespace DecryptPluralSightVideosGUI
                 // Create transcript path with the same name of the clip
                 string transcriptPath = Path.Combine(Path.GetDirectoryName(clipPath),
                     Path.GetFileNameWithoutExtension(clipPath) + ".srt");
-                if (!File.Exists(transcriptPath))
+                if (File.Exists(transcriptPath))
                 {
-                    using (FileStream transcriptStream = File.OpenWrite(transcriptPath))
+                    File.Delete(transcriptPath);
+                }
+
+                using (FileStream transcriptStream = File.OpenWrite(transcriptPath))
+                {
+                    using (StreamWriter writer = new StreamWriter(transcriptStream))
                     {
-                        using (StreamWriter writer = new StreamWriter(transcriptStream))
+                        // Write it to file with stream writer
+                        int i = 1;
+                        foreach (var clipTranscript in clipTranscripts)
                         {
-                            // Write it to file with stream writer
-                            int i = 1;
-                            foreach (var clipTranscript in clipTranscripts)
-                            {
-                                var start = TimeSpan.FromMilliseconds(clipTranscript.StartTime).ToString(@"hh\:mm\:ss\,fff");
-                                var end = TimeSpan.FromMilliseconds(clipTranscript.EndTime).ToString(@"hh\:mm\:ss\,fff");
-                                writer.WriteLine(i++);
-                                writer.WriteLine(start + " --> " + end);
-                                writer.WriteLine(clipTranscript.Text);
-                                writer.WriteLine();
-                            }
+                            var start = TimeSpan.FromMilliseconds(clipTranscript.StartTime).ToString(@"hh\:mm\:ss\,fff");
+                            var end = TimeSpan.FromMilliseconds(clipTranscript.EndTime).ToString(@"hh\:mm\:ss\,fff");
+                            writer.WriteLine(i++);
+                            writer.WriteLine(start + " --> " + end);
+                            writer.WriteLine(clipTranscript.Text);
+                            writer.WriteLine();
                         }
                     }
-                    bgwDecrypt.ReportProgress(1, new { Text = $"Transcript of {Path.GetFileName(clipPath)} generated.", Color = Color.Purple, newLine = false });
                 }
+                bgwDecrypt.ReportProgress(1, new Log { Text = $"Transcript of {Path.GetFileName(clipPath)} generated.", TextColor = Color.Purple, NewLine = false });
             }
         }
+
         #endregion
 
         #region DB
@@ -696,7 +725,7 @@ namespace DecryptPluralSightVideosGUI
             foreach (var invalidChar in InvalidFileCharacters)
                 path = path.Replace(invalidChar, '-');
 
-            return path;
+            return path.Trim();
         }
 
         /// <summary>
@@ -731,8 +760,10 @@ namespace DecryptPluralSightVideosGUI
             return folderPath.Substring(folderPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1);
         }
 
-        public void AddText(string text, Color color, bool newLine = false)
+        public void AddText(string text, Color color, bool newLine, bool IsError)
         {
+            if (chkShowErrOnly.Checked && !IsError) return;
+            
             rtbLog.SelectionColor = color;
             rtbLog.AppendText($"{text}\n");
             if (newLine) rtbLog.AppendText("\n");
@@ -744,14 +775,34 @@ namespace DecryptPluralSightVideosGUI
         public void AddListView(ListViewItem item, Image img)
         {
             imgList.Images.Add(item.ImageKey, img);
-            listView1.Items.Add(item);
+            lsvCourse.Items.Add(item);
 
-            listView1.SuspendLayout();
-            listView1.Refresh();
-            listView1.ResumeLayout();
+            lsvCourse.SuspendLayout();
+            lsvCourse.Refresh();
+            lsvCourse.ResumeLayout();
         }
 
         #endregion
+
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)       // Ctrl-S Save
+            {
+                new frmAbout().ShowDialog();
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
+        }
+    }
+
+    public static class ExtensionMethod {
+        public static void CheckUncheck(this ListViewItemCollection lstItem, bool selected)
+        {
+            foreach (ListViewItem item in lstItem)
+            {
+                item.Selected = selected;
+                item.Checked = selected;
+            }
+        }
     }
 
     class CourseItem
@@ -765,6 +816,7 @@ namespace DecryptPluralSightVideosGUI
         public string Text { get; set; }
         public Color TextColor { get; set; }
         public bool NewLine { get; set; }
+        public bool IsError { get; set; }
     }
 
     class AppSetting
@@ -777,6 +829,8 @@ namespace DecryptPluralSightVideosGUI
         public bool DeleteAfterDecrypt { get; set; }
         public bool ClipIndexAtOne { get; set; }
         public bool ModuleIndexAtOne { get; set; }
+        public bool ShowErrorOnly { get; set; }
+        public bool CopyImage { get; set; }
 
         public AppSetting()
         {
@@ -788,6 +842,8 @@ namespace DecryptPluralSightVideosGUI
             DeleteAfterDecrypt = true;
             ClipIndexAtOne = false;
             ModuleIndexAtOne = false;
+            ShowErrorOnly = false;
+            CopyImage = false;
         }
     }
 }
