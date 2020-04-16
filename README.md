@@ -29,3 +29,6 @@ This tool requires .Net Framework `4.5.2` or above.
 
 # Reference
 - This tool has been made by myself but some functions about running commandline tools or style of code that I refer from [Lynda-Decryptor](https://github.com/h4ck-rOOt/Lynda-Decryptor).
+
+# CopyRight
+- This software is freeware and open source. Please don't use it for commercial.
