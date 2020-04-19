@@ -12,12 +12,13 @@ Added Feature:
 + More features, you can check it :D.
 
 # Getting Started
-This tool requires .Net Framework `4.5.2` or above.
+* This tool requires .Net Framework `4.5.2` or above.
 
 ## Installing
 * Download the latest binary from [here](https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI/releases/latest).
 * Extract the zip file, open file DecryptPluralSightVideosGUI.exe.
 * Default Pluralsight Path is `C:\Users\<UserName>\AppData\Local\Pluralsight\courses`
+* Please don't remove course from POP before decrypt. You can check the Delete checkbox to remove course after course decrypted.
 
 # Author
 - Loc Nguyen.
