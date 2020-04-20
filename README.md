@@ -26,7 +26,7 @@ Added Feature:
 - sitiom
 
 # Version
-- This current version is `1.5.0.0`.
+- This current version is `1.6.0.0`.
 
 # Reference
 - This tool has been made by myself but some functions about running commandline tools or style of code that I refer from [Lynda-Decryptor](https://github.com/h4ck-rOOt/Lynda-Decryptor).
