@@ -64,6 +64,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tlsHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.tslToolVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslPOPVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnl1 = new System.Windows.Forms.Panel();
@@ -305,6 +306,8 @@
             // chkDelete
             // 
             this.chkDelete.AutoSize = true;
+            this.chkDelete.Checked = true;
+            this.chkDelete.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkDelete.Location = new System.Drawing.Point(684, 14);
             this.chkDelete.Name = "chkDelete";
             this.chkDelete.Size = new System.Drawing.Size(57, 17);
@@ -425,6 +428,7 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tlsHelp,
             this.tslToolVersion,
             this.tslPOPVersion});
             this.statusStrip1.Location = new System.Drawing.Point(0, -2);
@@ -434,9 +438,22 @@
             this.statusStrip1.TabIndex = 14;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // tlsHelp
+            // 
+            this.tlsHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tlsHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tlsHelp.Image = ((System.Drawing.Image)(resources.GetObject("tlsHelp.Image")));
+            this.tlsHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tlsHelp.Name = "tlsHelp";
+            this.tlsHelp.ShowDropDownArrow = false;
+            this.tlsHelp.Size = new System.Drawing.Size(36, 22);
+            this.tlsHelp.Text = "Help";
+            this.tlsHelp.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.tlsHelp.Click += new System.EventHandler(this.tlsHelp_Click);
+            // 
             // tslToolVersion
             // 
-            this.tslToolVersion.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.tslToolVersion.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.tslToolVersion.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.tslToolVersion.Name = "tslToolVersion";
             this.tslToolVersion.Size = new System.Drawing.Size(122, 19);
@@ -536,6 +553,7 @@
         private System.Windows.Forms.Panel pnl2;
         private System.Windows.Forms.ToolStripStatusLabel tslToolVersion;
         private System.Windows.Forms.ToolStripStatusLabel tslPOPVersion;
+        private System.Windows.Forms.ToolStripDropDownButton tlsHelp;
     }
 }
 
