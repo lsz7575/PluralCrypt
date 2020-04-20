@@ -63,11 +63,19 @@
             this.bgwGetCourse = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tslToolVersion = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tslPOPVersion = new System.Windows.Forms.ToolStripStatusLabel();
+            this.pnl1 = new System.Windows.Forms.Panel();
+            this.pnl2 = new System.Windows.Forms.Panel();
             this.pnlOption.SuspendLayout();
             this.pnlLog.SuspendLayout();
             this.pnlMain.SuspendLayout();
             this.pnlCourse.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.pnl1.SuspendLayout();
+            this.pnl2.SuspendLayout();
             this.SuspendLayout();
             // 
             // lsvCourse
@@ -80,7 +88,7 @@
             this.lsvCourse.Location = new System.Drawing.Point(0, 0);
             this.lsvCourse.MultiSelect = false;
             this.lsvCourse.Name = "lsvCourse";
-            this.lsvCourse.Size = new System.Drawing.Size(744, 397);
+            this.lsvCourse.Size = new System.Drawing.Size(744, 348);
             this.lsvCourse.TabIndex = 0;
             this.lsvCourse.UseCompatibleStateImageBehavior = false;
             this.lsvCourse.ItemActivate += new System.EventHandler(this.lsvCourse_ItemActivate);
@@ -188,7 +196,7 @@
             this.pnlOption.Controls.Add(this.txtDBPath);
             this.pnlOption.Controls.Add(this.label1);
             this.pnlOption.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlOption.Location = new System.Drawing.Point(0, 397);
+            this.pnlOption.Location = new System.Drawing.Point(0, 348);
             this.pnlOption.MinimumSize = new System.Drawing.Size(700, 108);
             this.pnlOption.Name = "pnlOption";
             this.pnlOption.Size = new System.Drawing.Size(744, 132);
@@ -349,7 +357,7 @@
             this.pnlLog.Location = new System.Drawing.Point(753, 3);
             this.pnlLog.MinimumSize = new System.Drawing.Size(400, 0);
             this.pnlLog.Name = "pnlLog";
-            this.pnlLog.Size = new System.Drawing.Size(630, 529);
+            this.pnlLog.Size = new System.Drawing.Size(630, 480);
             this.pnlLog.TabIndex = 11;
             // 
             // rtbLog
@@ -364,7 +372,7 @@
             this.rtbLog.Name = "rtbLog";
             this.rtbLog.ReadOnly = true;
             this.rtbLog.ShowSelectionMargin = true;
-            this.rtbLog.Size = new System.Drawing.Size(630, 529);
+            this.rtbLog.Size = new System.Drawing.Size(630, 480);
             this.rtbLog.TabIndex = 1;
             this.rtbLog.TabStop = false;
             this.rtbLog.Text = "";
@@ -377,7 +385,7 @@
             this.pnlMain.Location = new System.Drawing.Point(3, 3);
             this.pnlMain.MinimumSize = new System.Drawing.Size(0, 430);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(744, 529);
+            this.pnlMain.Size = new System.Drawing.Size(744, 480);
             this.pnlMain.TabIndex = 12;
             // 
             // pnlCourse
@@ -386,7 +394,7 @@
             this.pnlCourse.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlCourse.Location = new System.Drawing.Point(0, 0);
             this.pnlCourse.Name = "pnlCourse";
-            this.pnlCourse.Size = new System.Drawing.Size(744, 397);
+            this.pnlCourse.Size = new System.Drawing.Size(744, 348);
             this.pnlCourse.TabIndex = 11;
             // 
             // bgwDecrypt
@@ -411,17 +419,63 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1386, 535);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1386, 486);
             this.tableLayoutPanel1.TabIndex = 13;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslToolVersion,
+            this.tslPOPVersion});
+            this.statusStrip1.Location = new System.Drawing.Point(0, -2);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1386, 24);
+            this.statusStrip1.SizingGrip = false;
+            this.statusStrip1.TabIndex = 14;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // tslToolVersion
+            // 
+            this.tslToolVersion.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.tslToolVersion.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.tslToolVersion.Name = "tslToolVersion";
+            this.tslToolVersion.Size = new System.Drawing.Size(122, 19);
+            this.tslToolVersion.Text = "toolStripStatusLabel1";
+            // 
+            // tslPOPVersion
+            // 
+            this.tslPOPVersion.Name = "tslPOPVersion";
+            this.tslPOPVersion.Size = new System.Drawing.Size(0, 19);
+            // 
+            // pnl1
+            // 
+            this.pnl1.Controls.Add(this.tableLayoutPanel1);
+            this.pnl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnl1.Location = new System.Drawing.Point(0, 0);
+            this.pnl1.Name = "pnl1";
+            this.pnl1.Size = new System.Drawing.Size(1386, 486);
+            this.pnl1.TabIndex = 15;
+            // 
+            // pnl2
+            // 
+            this.pnl2.Controls.Add(this.statusStrip1);
+            this.pnl2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnl2.Location = new System.Drawing.Point(0, 486);
+            this.pnl2.Name = "pnl2";
+            this.pnl2.Size = new System.Drawing.Size(1386, 22);
+            this.pnl2.TabIndex = 16;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1386, 535);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.ClientSize = new System.Drawing.Size(1386, 508);
+            this.Controls.Add(this.pnl1);
+            this.Controls.Add(this.pnl2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
+            this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1145, 480);
             this.Name = "frmMain";
             this.Text = "Decrypt Pluralsight Videos GUI";
@@ -433,6 +487,11 @@
             this.pnlMain.ResumeLayout(false);
             this.pnlCourse.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.pnl1.ResumeLayout(false);
+            this.pnl2.ResumeLayout(false);
+            this.pnl2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -472,6 +531,11 @@
         private System.Windows.Forms.Button btnSelectAll;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox chkCopyImage;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.Panel pnl1;
+        private System.Windows.Forms.Panel pnl2;
+        private System.Windows.Forms.ToolStripStatusLabel tslToolVersion;
+        private System.Windows.Forms.ToolStripStatusLabel tslPOPVersion;
     }
 }
 

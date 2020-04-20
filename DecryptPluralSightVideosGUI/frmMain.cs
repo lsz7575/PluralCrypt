@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using static System.Windows.Forms.ListView;
+using System.Diagnostics;
 
 namespace DecryptPluralSightVideosGUI
 {
@@ -30,6 +31,7 @@ namespace DecryptPluralSightVideosGUI
         public frmMain()
         {
             InitializeComponent();
+
             #region Apply setting
             appSetting = File.Exists("setting.json") ? JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("setting.json")) : new AppSetting();
 
@@ -51,8 +53,6 @@ namespace DecryptPluralSightVideosGUI
                 txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
             }
 
-
-
             chkDecrypt.Checked = appSetting.Decrypt;
             chkCreateSub.Checked = appSetting.CreateSub;
             chkDelete.Checked = appSetting.DeleteAfterDecrypt;
@@ -73,6 +73,13 @@ namespace DecryptPluralSightVideosGUI
             bgwGetCourse.DoWork += BgwGetCourse_DoWork;
             bgwGetCourse.ProgressChanged += BgwGetCourse_ProgressChanged;
             bgwGetCourse.RunWorkerCompleted += BgwGetCourse_RunWorkerCompleted;
+
+            tslToolVersion.Text = $"Tool version: {System.Windows.Forms.Application.ProductVersion}";
+            if (File.Exists(txtDBPath.Text.Replace("pluralsight.db", "pluralsight.exe")))
+            {
+                FileVersionInfo fvInfo = FileVersionInfo.GetVersionInfo(txtDBPath.Text.Replace("pluralsight.db", "pluralsight.exe"));
+                tslPOPVersion.Text = $"Pluralsight Offline Player Version: {fvInfo.FileVersion}";
+            }
         }
 
         #region BackgroundWorker
@@ -273,6 +280,15 @@ namespace DecryptPluralSightVideosGUI
             lsvCourse.Items.CheckUncheck(false);
         }
 
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)       // Ctrl-S Save
+            {
+                new frmAbout().ShowDialog();
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
+        }
+
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             appSetting = new AppSetting()
@@ -290,7 +306,6 @@ namespace DecryptPluralSightVideosGUI
             };
 
             File.WriteAllText("setting.json", JsonConvert.SerializeObject(appSetting));
-
         }
         #endregion
 
@@ -783,17 +798,9 @@ namespace DecryptPluralSightVideosGUI
         }
 
         #endregion
-
-        private void frmMain_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.F1)       // Ctrl-S Save
-            {
-                new frmAbout().ShowDialog();
-                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
-            }
-        }
     }
 
+    #region class
     public static class ExtensionMethod {
         public static void CheckUncheck(this ListViewItemCollection lstItem, bool selected)
         {
@@ -845,5 +852,6 @@ namespace DecryptPluralSightVideosGUI
             ShowErrorOnly = false;
             CopyImage = false;
         }
-    }
+    } 
+    #endregion
 }
