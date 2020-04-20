@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using static System.Windows.Forms.ListView;
+using System.Diagnostics;
 
 namespace DecryptPluralSightVideosGUI
 {
@@ -26,40 +27,45 @@ namespace DecryptPluralSightVideosGUI
         private readonly char[] InvalidFileCharacters = Path.GetInvalidFileNameChars();
         private SQLiteConnection DatabaseConnection;
         private AppSetting appSetting;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public frmMain()
         {
             InitializeComponent();
+
             #region Apply setting
-            appSetting = File.Exists("setting.json") ? JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("setting.json")) : new AppSetting();
-
-            if (string.IsNullOrEmpty(appSetting.CoursePath))
+            if (File.Exists("setting.json"))
             {
-                appSetting.CoursePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Pluralsight";
-                if (!Directory.Exists(appSetting.CoursePath))
-                    appSetting.CoursePath = string.Empty;
+                appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("setting.json"));
 
-                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\courses" : "";
-                txtDBPath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\pluralsight.db" : "";
-                txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
-            }
-            else
-            {
-                appSetting.CoursePath = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
                 txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
                 txtDBPath.Text = File.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath : "";
                 txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
+
+                chkDecrypt.Checked = appSetting.Decrypt;
+                chkCreateSub.Checked = appSetting.CreateSub;
+                chkDelete.Checked = appSetting.DeleteAfterDecrypt;
+                chkShowErrOnly.Checked = appSetting.ShowErrorOnly;
+                chkCopyImage.Checked = appSetting.CopyImage;
+                chkStartClipIndexAt1.Checked = appSetting.ClipIndexAtOne;
+                chkStartModuleIndexAt1.Checked = appSetting.ModuleIndexAtOne;
             }
+            else
+            {
+                appSetting = new AppSetting();
+                string pluralsightPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Pluralsight";
+                if (Directory.Exists(pluralsightPath))
+                {
+                    txtCoursePath.Text = Directory.Exists(pluralsightPath + @"\courses") ? pluralsightPath + @"\courses" : "";
+                    txtDBPath.Text = File.Exists(pluralsightPath + @"\pluralsight.db") ? pluralsightPath + @"\pluralsight.db" : "";
 
+                    appSetting.CoursePath = txtCoursePath.Text;
+                    appSetting.DatabasePath = txtDBPath.Text;
+                }
+                
 
-
-            chkDecrypt.Checked = appSetting.Decrypt;
-            chkCreateSub.Checked = appSetting.CreateSub;
-            chkDelete.Checked = appSetting.DeleteAfterDecrypt;
-            chkShowErrOnly.Checked = appSetting.ShowErrorOnly;
-            chkCopyImage.Checked = appSetting.CopyImage;
-            chkStartClipIndexAt1.Checked = appSetting.ClipIndexAtOne;
-            chkStartModuleIndexAt1.Checked = appSetting.ModuleIndexAtOne;
+            }
+            
             #endregion
 
             imgList.ImageSize = new Size(170, 100);
@@ -73,6 +79,14 @@ namespace DecryptPluralSightVideosGUI
             bgwGetCourse.DoWork += BgwGetCourse_DoWork;
             bgwGetCourse.ProgressChanged += BgwGetCourse_ProgressChanged;
             bgwGetCourse.RunWorkerCompleted += BgwGetCourse_RunWorkerCompleted;
+
+            tslToolVersion.Text = $"Tool version: {System.Windows.Forms.Application.ProductVersion}";
+            if (File.Exists(txtDBPath.Text.Replace("pluralsight.db", "pluralsight.exe")))
+            {
+                tslToolVersion.BorderSides = (ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Right);
+                FileVersionInfo fvInfo = FileVersionInfo.GetVersionInfo(txtDBPath.Text.Replace("pluralsight.db", "pluralsight.exe"));
+                tslPOPVersion.Text = $"Pluralsight Offline Player Version: {fvInfo.FileVersion}";
+            }
         }
 
         #region BackgroundWorker
@@ -153,12 +167,20 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog { SelectedPath = txtCoursePath.Text };
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                }
             }
             catch (PathTooLongException)
             {
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                }
             }
         }
 
@@ -185,7 +207,11 @@ namespace DecryptPluralSightVideosGUI
                     Filter = "Database file (*.db) | *.db",
                     FileName = txtDBPath.Text
                 };
-                if (openFileDialog.ShowDialog() == DialogResult.OK) txtDBPath.Text = openFileDialog.FileName;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtDBPath.Text = openFileDialog.FileName;
+                    appSetting.DatabasePath = openFileDialog.FileName;
+                }
             }
             catch (PathTooLongException)
             {
@@ -194,7 +220,11 @@ namespace DecryptPluralSightVideosGUI
                     Multiselect = false,
                     Filter = "Database file (*.db) | *.db",
                 };
-                if (openFileDialog.ShowDialog() == DialogResult.OK) txtDBPath.Text = openFileDialog.FileName;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtDBPath.Text = openFileDialog.FileName;
+                    appSetting.DatabasePath = openFileDialog.FileName;
+                }
             }
         }
 
@@ -213,6 +243,7 @@ namespace DecryptPluralSightVideosGUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.Error(ex);
             }
         }
 
@@ -229,6 +260,7 @@ namespace DecryptPluralSightVideosGUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.Error(ex);
             }
         }
 
@@ -248,6 +280,7 @@ namespace DecryptPluralSightVideosGUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.Error(ex);
             }
         }
 
@@ -260,6 +293,7 @@ namespace DecryptPluralSightVideosGUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.Error(ex);
             }
         }
 
@@ -271,6 +305,20 @@ namespace DecryptPluralSightVideosGUI
         private void btnDeselectAll_Click(object sender, EventArgs e)
         {
             lsvCourse.Items.CheckUncheck(false);
+        }
+
+        private void tlsHelp_Click(object sender, EventArgs e)
+        {
+            new frmAbout().ShowDialog();
+        }
+
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                new frmAbout().ShowDialog();
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -290,7 +338,6 @@ namespace DecryptPluralSightVideosGUI
             };
 
             File.WriteAllText("setting.json", JsonConvert.SerializeObject(appSetting));
-
         }
         #endregion
 
@@ -304,13 +351,13 @@ namespace DecryptPluralSightVideosGUI
                     bgwGetCourse.ReportProgress(1, new Log() { Text = "Getting course data . . .", TextColor = Color.Green, NewLine = true });
 
                     List<string> folderList = Directory.GetDirectories(coursePath, "*", SearchOption.TopDirectoryOnly).ToList();
-
+                    logger.Debug($"FolderList1: {folderList.Count}");
                     folderList = folderList.Where(r => Directory.GetDirectories(r, "*", SearchOption.TopDirectoryOnly).Length > 0).ToList();
-
+                    logger.Debug($"FolderList2: {folderList.Count}");
                     listCourse = folderList.Select(r => new CourseItem() { CoursePath = r, Course = this.GetCourseFromDb(r) }).Where(r => r.Course != null).OrderBy(r => r.Course.Title).ToList();
-
-                    listCourse = listCourse.Where(r => Directory.GetFiles(r.CoursePath, "*.psv", SearchOption.AllDirectories).Length == r.Course.NumOfVideo).ToList();
-
+                    logger.Debug($"listCourse1: {listCourse.Count}");
+                    listCourse = listCourse.Where(c => c.Course.IsDownloaded).ToList();
+                    logger.Debug($"listCourse2: {listCourse.Count}");
                     foreach (CourseItem item in listCourse)
                     {
                         Image img = File.Exists(item.CoursePath + @"\image.jpg") ? Image.FromFile(item.CoursePath + @"\image.jpg") : new Bitmap(100, 100);
@@ -320,7 +367,7 @@ namespace DecryptPluralSightVideosGUI
                         bgwGetCourse.ReportProgress(1, new { Item = listItem, Image = img });
                     }
 
-                    bgwGetCourse.ReportProgress(1, new Log() { Text = "Complete!", TextColor = Color.Green, NewLine = true });
+                    bgwGetCourse.ReportProgress(1, new Log() { Text = $"Complete! Total: {listCourse.Count} courses", TextColor = Color.Green, NewLine = true });
 
                     bgwGetCourse.ReportProgress(100);
                 }
@@ -328,6 +375,7 @@ namespace DecryptPluralSightVideosGUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.Error(ex);
             }
         }
 
@@ -394,7 +442,7 @@ namespace DecryptPluralSightVideosGUI
                                     ? new DirectoryInfo(newModulePath)
                                     : Directory.CreateDirectory(newModulePath);
                                 //Decrypt all videos in current module folder
-                                this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName);
+                                this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName, courseItem.Course.HasTranscript);
                             }
                             else
                             {
@@ -416,15 +464,10 @@ namespace DecryptPluralSightVideosGUI
                         bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete folder course {courseItem.Course.Title} fail\n{ex.Message}", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
 
-                    try
+                    if (!RemoveCourseInDb(courseItem.CoursePath));
                     {
-                        RemoveCourseInDb(courseItem.CoursePath);
+                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} from db fail", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
-                    catch (Exception ex)
-                    {
-                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} from db fail\n{ex.Message}", TextColor = Color.Gray, NewLine = true, IsError = true });
-                    }
-
 
                     bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} success!", TextColor = Color.Magenta, NewLine = true });
                 }
@@ -433,50 +476,56 @@ namespace DecryptPluralSightVideosGUI
             bgwDecrypt.ReportProgress(100);
         }
 
-        public void DecryptAllVideos(string folderPath, Module module, string outputPath)
+        public void DecryptAllVideos(string folderPath, Module module, string outputPath, bool hasTranscript)
         {
-
-            // Get all clips of this module from database
-            List<Clip> listClips = module.Clips;
-
-            if (listClips.Count > 0)
+            try
             {
-                // integer to add 1 if index should start at 1
-                int startAt1 = Convert.ToInt16(chkStartClipIndexAt1.Checked);
-                foreach (Clip clip in listClips)
+                // Get all clips of this module from database
+                List<Clip> listClips = module.Clips;
+
+                if (listClips.Count > 0)
                 {
-                    // Get current path of the encrypted video
-                    string currentPath = Path.Combine(folderPath, $"{clip.Name}.psv");
-                    if (File.Exists(currentPath))
+                    // integer to add 1 if index should start at 1
+                    int startAt1 = Convert.ToInt16(chkStartClipIndexAt1.Checked);
+                    foreach (Clip clip in listClips)
                     {
-                        // Create new path with output folder
-                        string newPath = Path.Combine(outputPath, $"{(startAt1 + clip.Index):00}. {clip.Title}.mp4");
-
-                        // Init video and get it from iStream
-                        var playingFileStream = new VirtualFileStream(currentPath);
-                        playingFileStream.Clone(out IStream iStream);
-
-                        string fileName = Path.GetFileName(currentPath);
-
-                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Start to Decrypt File \"{fileName}\"", TextColor = Color.Yellow, NewLine = false });
-
-                        this.DecryptVideo(iStream, newPath);
-                        if (chkCreateSub.Checked)
+                        // Get current path of the encrypted video
+                        string currentPath = Path.Combine(folderPath, $"{clip.Name}.psv");
+                        if (File.Exists(currentPath))
                         {
-                            // Generate transcript file if user ask
-                            this.WriteTranscriptFile(clip, newPath);
+                            // Create new path with output folder
+                            string newPath = Path.Combine(outputPath, $"{(startAt1 + clip.Index):00}. {clip.Title}.mp4");
+
+                            // Init video and get it from iStream
+                            var playingFileStream = new VirtualFileStream(currentPath);
+                            playingFileStream.Clone(out IStream iStream);
+
+                            string fileName = Path.GetFileName(currentPath);
+
+                            bgwDecrypt.ReportProgress(1, new Log { Text = $"Start to Decrypt File \"{fileName}\"", TextColor = Color.Yellow, NewLine = false });
+
+                            this.DecryptVideo(iStream, newPath);
+                            if (chkCreateSub.Checked && hasTranscript)
+                            {
+                                // Generate transcript file if user ask
+                                this.WriteTranscriptFile(clip, newPath);
+                            }
+
+                            bgwDecrypt.ReportProgress(1, new Log { Text = $"Decrypt File \"{Path.GetFileName(newPath)}\" success!", TextColor = Color.Green, NewLine = true });
+                            playingFileStream.Dispose();
+
                         }
+                        else
+                        {
+                            bgwDecrypt.ReportProgress(1, new Log { Text = $"File \"{Path.GetFileName(currentPath)}\"  cannot be found", TextColor = Color.Gray, NewLine = true, IsError = true });
 
-                        bgwDecrypt.ReportProgress(1, new Log { Text = $"Decrypt File \"{Path.GetFileName(newPath)}\" success!", TextColor = Color.Green, NewLine = true });
-                        playingFileStream.Dispose();
-
-                    }
-                    else
-                    {
-                        bgwDecrypt.ReportProgress(1, new Log { Text = $"File \"{Path.GetFileName(currentPath)}\"  cannot be found", TextColor = Color.Gray, NewLine = true, IsError = true });
-
+                        }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex);
             }
         }
 
@@ -548,29 +597,37 @@ namespace DecryptPluralSightVideosGUI
         /// <returns>List of transcript text of the current clip.</returns>
         public List<ClipTranscript> GetTranscriptFromDb(int clipId)
         {
-            List<ClipTranscript> list = new List<ClipTranscript>();
+            try
+            {
+                List<ClipTranscript> list = new List<ClipTranscript>();
 
-            var cmd = DatabaseConnection.CreateCommand();
-            cmd.CommandText = @"SELECT StartTime, EndTime, Text
+                var cmd = DatabaseConnection.CreateCommand();
+                cmd.CommandText = @"SELECT StartTime, EndTime, Text
                                 FROM ClipTranscript
                                 WHERE ClipId = @clipId
                                 ORDER BY Id ASC";
-            cmd.Parameters.Add(new SQLiteParameter("@clipId", clipId));
+                cmd.Parameters.Add(new SQLiteParameter("@clipId", clipId));
 
-            var reader = cmd.ExecuteReader();
+                var reader = cmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                ClipTranscript clipTranscript = new ClipTranscript
+                while (reader.Read())
                 {
-                    StartTime = reader.GetInt32(reader.GetOrdinal("StartTime")),
-                    EndTime = reader.GetInt32(reader.GetOrdinal("EndTime")),
-                    Text = reader.GetString(reader.GetOrdinal("Text"))
-                };
-                list.Add(clipTranscript);
-            }
+                    ClipTranscript clipTranscript = new ClipTranscript
+                    {
+                        StartTime = reader.GetInt32(reader.GetOrdinal("StartTime")),
+                        EndTime = reader.GetInt32(reader.GetOrdinal("EndTime")),
+                        Text = reader.GetString(reader.GetOrdinal("Text"))
+                    };
+                    list.Add(clipTranscript);
+                }
 
-            return list;
+                return list;
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex);
+                return new List<ClipTranscript>();
+            }
         }
 
         /// <summary>
@@ -578,7 +635,7 @@ namespace DecryptPluralSightVideosGUI
         /// </summary>
         /// <param name="moduleId">Module Id</param>
         /// <returns>List of information about clips belong to specified module.</returns>
-        public List<Clip> GetClipsFromDb(int moduleId)
+        public List<Clip> GetClipsFromDb(int moduleId, string moduleName, string courseName)
         {
             List<Clip> list = new List<Clip>();
 
@@ -600,6 +657,8 @@ namespace DecryptPluralSightVideosGUI
                     Index = reader.GetInt32(reader.GetOrdinal("ClipIndex")),
                     Subtitle = GetTranscriptFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
                 };
+
+                clip.IsDownloaded = File.Exists($@"{appSetting.CoursePath}\{courseName}\{moduleName}\{clip.Name}.psv");
                 list.Add(clip);
             }
             reader.Close();
@@ -631,9 +690,10 @@ namespace DecryptPluralSightVideosGUI
                     AuthorHandle = reader.GetString(reader.GetOrdinal("AuthorHandle")),
                     Name = reader.GetString(reader.GetOrdinal("Name")),
                     Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    Index = reader.GetInt32(reader.GetOrdinal("ModuleIndex")),
-                    Clips = GetClipsFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
+                    Index = reader.GetInt32(reader.GetOrdinal("ModuleIndex"))
                 };
+
+                module.Clips = GetClipsFromDb(module.Id, this.ModuleHash(module.Name, module.AuthorHandle), courseName);
                 list.Add(module);
             }
             reader.Close();
@@ -665,11 +725,10 @@ namespace DecryptPluralSightVideosGUI
                 {
                     Name = reader.GetString(reader.GetOrdinal("Name")),
                     Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    HasTranscript = reader.GetInt32(reader.GetOrdinal("HasTranscript")),
-                    Modules = GetModulesFromDb(reader.GetString(reader.GetOrdinal("Name")))
+                    HasTranscript = Convert.ToBoolean(reader.GetInt32(reader.GetOrdinal("HasTranscript")))
                 };
 
-                course.NumOfVideo = course.Modules.Sum(r => r.Clips.Count);
+                course.Modules = GetModulesFromDb(course.Name);
             }
 
             reader.Close();
@@ -702,15 +761,23 @@ namespace DecryptPluralSightVideosGUI
 
         public bool RemoveCourseInDb(string coursePath)
         {
-            string courseName = GetFolderName(coursePath);
+            try
+            {
+                string courseName = GetFolderName(coursePath);
 
-            var cmd = DatabaseConnection.CreateCommand();
-            cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName;pragma foreign_keys=off;";
-            cmd.Parameters.Add(new SQLiteParameter("@courseName", courseName));
+                var cmd = DatabaseConnection.CreateCommand();
+                cmd.CommandText = @"pragma foreign_keys=on;DELETE FROM Course WHERE Name = @courseName;pragma foreign_keys=off;";
+                cmd.Parameters.Add(new SQLiteParameter("@courseName", courseName));
 
-            var reader = cmd.ExecuteNonQuery();
+                var reader = cmd.ExecuteNonQuery();
 
-            return reader > 0;
+                return reader > 0;
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex);
+                return false;
+            }
         }
         #endregion
 
@@ -783,17 +850,9 @@ namespace DecryptPluralSightVideosGUI
         }
 
         #endregion
-
-        private void frmMain_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.F1)       // Ctrl-S Save
-            {
-                new frmAbout().ShowDialog();
-                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
-            }
-        }
     }
 
+    #region class
     public static class ExtensionMethod {
         public static void CheckUncheck(this ListViewItemCollection lstItem, bool selected)
         {
@@ -845,5 +904,6 @@ namespace DecryptPluralSightVideosGUI
             ShowErrorOnly = false;
             CopyImage = false;
         }
-    }
+    } 
+    #endregion
 }

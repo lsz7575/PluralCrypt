@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DecryptPluralSightVideosGUI.Model
 {
@@ -6,10 +7,10 @@ namespace DecryptPluralSightVideosGUI.Model
     {
         public string Name { get; set; }
         public string Title { get; set; }
-        public int HasTranscript { get; set; }
+        public bool HasTranscript { get; set; }
         public List<Module> Modules { get; set; }
 
-        public int NumOfVideo { get; set; }
+        public bool IsDownloaded { get { return !Modules.Any(md => !md.IsDownloaded); } }
 
         public Course()
         {
