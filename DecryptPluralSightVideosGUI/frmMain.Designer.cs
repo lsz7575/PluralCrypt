@@ -442,7 +442,6 @@
             // 
             this.tlsHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.tlsHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tlsHelp.Image = ((System.Drawing.Image)(resources.GetObject("tlsHelp.Image")));
             this.tlsHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tlsHelp.Name = "tlsHelp";
             this.tlsHelp.ShowDropDownArrow = false;
