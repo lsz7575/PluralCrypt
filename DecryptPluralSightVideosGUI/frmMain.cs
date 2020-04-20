@@ -27,39 +27,34 @@ namespace DecryptPluralSightVideosGUI
         private readonly char[] InvalidFileCharacters = Path.GetInvalidFileNameChars();
         private SQLiteConnection DatabaseConnection;
         private AppSetting appSetting;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public frmMain()
         {
             InitializeComponent();
 
             #region Apply setting
-            appSetting = File.Exists("setting.json") ? JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("setting.json")) : new AppSetting();
-
-            if (string.IsNullOrEmpty(appSetting.CoursePath))
+            if (File.Exists("setting.json"))
             {
-                appSetting.CoursePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Pluralsight";
-                if (!Directory.Exists(appSetting.CoursePath))
-                    appSetting.CoursePath = string.Empty;
+                appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("setting.json"));
 
-                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\courses" : "";
-                txtDBPath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath + @"\pluralsight.db" : "";
+                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
+                txtDBPath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
                 txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
+
+                chkDecrypt.Checked = appSetting.Decrypt;
+                chkCreateSub.Checked = appSetting.CreateSub;
+                chkDelete.Checked = appSetting.DeleteAfterDecrypt;
+                chkShowErrOnly.Checked = appSetting.ShowErrorOnly;
+                chkCopyImage.Checked = appSetting.CopyImage;
+                chkStartClipIndexAt1.Checked = appSetting.ClipIndexAtOne;
+                chkStartModuleIndexAt1.Checked = appSetting.ModuleIndexAtOne;
             }
             else
             {
-                appSetting.CoursePath = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
-                txtCoursePath.Text = Directory.Exists(appSetting.CoursePath) ? appSetting.CoursePath : "";
-                txtDBPath.Text = File.Exists(appSetting.DatabasePath) ? appSetting.DatabasePath : "";
-                txtOutputPath.Text = Directory.Exists(appSetting.OutputPath) ? appSetting.OutputPath : "";
+                appSetting = new AppSetting();
             }
-
-            chkDecrypt.Checked = appSetting.Decrypt;
-            chkCreateSub.Checked = appSetting.CreateSub;
-            chkDelete.Checked = appSetting.DeleteAfterDecrypt;
-            chkShowErrOnly.Checked = appSetting.ShowErrorOnly;
-            chkCopyImage.Checked = appSetting.CopyImage;
-            chkStartClipIndexAt1.Checked = appSetting.ClipIndexAtOne;
-            chkStartModuleIndexAt1.Checked = appSetting.ModuleIndexAtOne;
+            
             #endregion
 
             imgList.ImageSize = new Size(170, 100);
@@ -160,12 +155,20 @@ namespace DecryptPluralSightVideosGUI
             try
             {
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog { SelectedPath = txtCoursePath.Text };
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                }
             }
             catch (PathTooLongException)
             {
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
+                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                }
             }
         }
 
@@ -192,7 +195,11 @@ namespace DecryptPluralSightVideosGUI
                     Filter = "Database file (*.db) | *.db",
                     FileName = txtDBPath.Text
                 };
-                if (openFileDialog.ShowDialog() == DialogResult.OK) txtDBPath.Text = openFileDialog.FileName;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtDBPath.Text = openFileDialog.FileName;
+                    appSetting.DatabasePath = openFileDialog.FileName;
+                }
             }
             catch (PathTooLongException)
             {
@@ -201,7 +208,11 @@ namespace DecryptPluralSightVideosGUI
                     Multiselect = false,
                     Filter = "Database file (*.db) | *.db",
                 };
-                if (openFileDialog.ShowDialog() == DialogResult.OK) txtDBPath.Text = openFileDialog.FileName;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtDBPath.Text = openFileDialog.FileName;
+                    appSetting.DatabasePath = openFileDialog.FileName;
+                }
             }
         }
 
@@ -319,13 +330,13 @@ namespace DecryptPluralSightVideosGUI
                     bgwGetCourse.ReportProgress(1, new Log() { Text = "Getting course data . . .", TextColor = Color.Green, NewLine = true });
 
                     List<string> folderList = Directory.GetDirectories(coursePath, "*", SearchOption.TopDirectoryOnly).ToList();
-
+                    logger.Debug($"FolderList1: {folderList.Count}");
                     folderList = folderList.Where(r => Directory.GetDirectories(r, "*", SearchOption.TopDirectoryOnly).Length > 0).ToList();
-
+                    logger.Debug($"FolderList2: {folderList.Count}");
                     listCourse = folderList.Select(r => new CourseItem() { CoursePath = r, Course = this.GetCourseFromDb(r) }).Where(r => r.Course != null).OrderBy(r => r.Course.Title).ToList();
-
-                    listCourse = listCourse.Where(r => Directory.GetFiles(r.CoursePath, "*.psv", SearchOption.AllDirectories).Length == r.Course.NumOfVideo).ToList();
-
+                    logger.Debug($"listCourse1: {listCourse.Count}");
+                    listCourse = listCourse.Where(c => c.Course.IsDownloaded).ToList();
+                    logger.Debug($"listCourse2: {listCourse.Count}");
                     foreach (CourseItem item in listCourse)
                     {
                         Image img = File.Exists(item.CoursePath + @"\image.jpg") ? Image.FromFile(item.CoursePath + @"\image.jpg") : new Bitmap(100, 100);
@@ -335,7 +346,7 @@ namespace DecryptPluralSightVideosGUI
                         bgwGetCourse.ReportProgress(1, new { Item = listItem, Image = img });
                     }
 
-                    bgwGetCourse.ReportProgress(1, new Log() { Text = "Complete!", TextColor = Color.Green, NewLine = true });
+                    bgwGetCourse.ReportProgress(1, new Log() { Text = $"Complete! Total: {listCourse.Count} courses", TextColor = Color.Green, NewLine = true });
 
                     bgwGetCourse.ReportProgress(100);
                 }
@@ -409,7 +420,7 @@ namespace DecryptPluralSightVideosGUI
                                     ? new DirectoryInfo(newModulePath)
                                     : Directory.CreateDirectory(newModulePath);
                                 //Decrypt all videos in current module folder
-                                this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName);
+                                this.DecryptAllVideos(moduleHashPath, module, moduleInfo.FullName, courseItem.Course.HasTranscript);
                             }
                             else
                             {
@@ -448,7 +459,7 @@ namespace DecryptPluralSightVideosGUI
             bgwDecrypt.ReportProgress(100);
         }
 
-        public void DecryptAllVideos(string folderPath, Module module, string outputPath)
+        public void DecryptAllVideos(string folderPath, Module module, string outputPath, bool hasTranscript)
         {
 
             // Get all clips of this module from database
@@ -476,7 +487,7 @@ namespace DecryptPluralSightVideosGUI
                         bgwDecrypt.ReportProgress(1, new Log { Text = $"Start to Decrypt File \"{fileName}\"", TextColor = Color.Yellow, NewLine = false });
 
                         this.DecryptVideo(iStream, newPath);
-                        if (chkCreateSub.Checked)
+                        if (chkCreateSub.Checked && hasTranscript)
                         {
                             // Generate transcript file if user ask
                             this.WriteTranscriptFile(clip, newPath);
@@ -593,7 +604,7 @@ namespace DecryptPluralSightVideosGUI
         /// </summary>
         /// <param name="moduleId">Module Id</param>
         /// <returns>List of information about clips belong to specified module.</returns>
-        public List<Clip> GetClipsFromDb(int moduleId)
+        public List<Clip> GetClipsFromDb(int moduleId, string moduleName, string courseName)
         {
             List<Clip> list = new List<Clip>();
 
@@ -615,6 +626,8 @@ namespace DecryptPluralSightVideosGUI
                     Index = reader.GetInt32(reader.GetOrdinal("ClipIndex")),
                     Subtitle = GetTranscriptFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
                 };
+
+                clip.IsDownloaded = File.Exists($@"{appSetting.CoursePath}\{courseName}\{moduleName}\{clip.Name}.psv");
                 list.Add(clip);
             }
             reader.Close();
@@ -646,9 +659,10 @@ namespace DecryptPluralSightVideosGUI
                     AuthorHandle = reader.GetString(reader.GetOrdinal("AuthorHandle")),
                     Name = reader.GetString(reader.GetOrdinal("Name")),
                     Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    Index = reader.GetInt32(reader.GetOrdinal("ModuleIndex")),
-                    Clips = GetClipsFromDb(reader.GetInt32(reader.GetOrdinal("Id")))
+                    Index = reader.GetInt32(reader.GetOrdinal("ModuleIndex"))
                 };
+
+                module.Clips = GetClipsFromDb(module.Id, this.ModuleHash(module.Name, module.AuthorHandle), courseName);
                 list.Add(module);
             }
             reader.Close();
@@ -680,11 +694,10 @@ namespace DecryptPluralSightVideosGUI
                 {
                     Name = reader.GetString(reader.GetOrdinal("Name")),
                     Title = CleanName(reader.GetString(reader.GetOrdinal("Title"))),
-                    HasTranscript = reader.GetInt32(reader.GetOrdinal("HasTranscript")),
-                    Modules = GetModulesFromDb(reader.GetString(reader.GetOrdinal("Name")))
+                    HasTranscript = Convert.ToBoolean(reader.GetInt32(reader.GetOrdinal("HasTranscript")))
                 };
 
-                course.NumOfVideo = course.Modules.Sum(r => r.Clips.Count);
+                course.Modules = GetModulesFromDb(course.Name);
             }
 
             reader.Close();
