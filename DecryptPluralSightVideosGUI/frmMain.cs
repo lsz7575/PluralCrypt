@@ -464,7 +464,7 @@ namespace DecryptPluralSightVideosGUI
                         bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete folder course {courseItem.Course.Title} fail\n{ex.Message}", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
 
-                    if (!RemoveCourseInDb(courseItem.CoursePath));
+                    if (!RemoveCourseInDb(courseItem.CoursePath))
                     {
                         bgwDecrypt.ReportProgress(1, new Log { Text = $"Delete course {courseItem.Course.Title} from db fail", TextColor = Color.Gray, NewLine = true, IsError = true });
                     }
