@@ -257,8 +257,7 @@ namespace DecryptPluralSightVideos
                     if (File.Exists(currPath))
                     {
                         // Create new path with output folder
-                        var newPath = Path.Combine(outputPath,
-                            (clip.ClipIndex < 10)? "0":"" + clip.ClipIndex + ". " + clip.ClipTitle + ".mp4");
+                        var newPath = Path.Combine(outputPath, clip.ClipIndex.ToString("00") + ". " + clip.ClipTitle + ".mp4");
 
                             // If length too long, rename it
                         if (newPath.Length > 240)
@@ -283,21 +282,6 @@ namespace DecryptPluralSightVideos
                             // Generate transcript file if user ask
                             WriteTranscriptFile(clip, newPath);
                         }
-                        //Semaphore.Wait();
-                        //TaskList.Add(Task.Run(() =>
-                        //{
-                        //    // Write the decrypted video from iStream to new file mp4
-                        //    DecryptVideo(iStream, newPath);
-                        //    if (Options.CreateTranscript)
-                        //    {
-                        //        // Generate transcript file if user ask
-                        //        WriteTranscriptFile(clip, newPath);
-                        //    }
-                        //    lock (SemaphoreLock)
-                        //    {
-                        //        Semaphore.Release();
-                        //    }
-                        //}));
 
                         WriteToConsole($"Decrypt File \"{Path.GetFileName(newPath)}\" success!", ConsoleColor.Green, true);
                         playingFileStream.Dispose();
