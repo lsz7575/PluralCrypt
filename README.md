@@ -14,11 +14,26 @@ Added Feature:
 # Getting Started
 * This tool requires .Net Framework `4.5.2` or above.
 
-## Installing
+# Installing
 * Download the latest binary from [here](https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI/releases/latest).
 * Extract the zip file, open file DecryptPluralSightVideosGUI.exe.
 * Default Pluralsight Path is `C:\Users\<UserName>\AppData\Local\Pluralsight\courses`
-* Please don't remove course from POP before decrypt. You can check the Delete checkbox to remove course after course decrypted.
+
+# How to use
+* Step 1: Open file `DecryptPluralSightVideosGUI.exe`.
+* Step 2: Select the course path and DB file. Note: The course path always include `\courses` at the end of the path.
+* Step 3: After select exactly all paths, press the `Read course` button.
+* Step 4: Select the courses want to decrypt or press the `Select all` button to select all courses.
+* Step 5: Choose the option you want
+  - Decrypt: Decrypt the course.
+  - Create sub: Create the subtitle file.
+  - Delete: Delete course after decrypt.
+* Step 6: After choosing the option, press `Run` and waiting for the decrypt process finish.
+
+**Notes:**
+   + Please don't remove the course from POP before decrypt. You can check the Delete checkbox to remove the course after the course decrypted.
+   + You can delete all courses select all courses, check the `Delete` checkbox only, and press `Run`.
+   + Some courses don't have subtitles, so the subtitle file will not be generated.
 
 # Author
 - Loc Nguyen.
@@ -29,7 +44,7 @@ Added Feature:
 - This current version is `1.6.0.0`.
 
 # Reference
-- This tool has been made by myself but some functions about running commandline tools or style of code that I refer from [Lynda-Decryptor](https://github.com/h4ck-rOOt/Lynda-Decryptor).
+- This tool has been made by myself but some functions about running command-line tools or style of code that I refer from [Lynda-Decryptor](https://github.com/h4ck-rOOt/Lynda-Decryptor).
 
 # Copyright ©
 - This software is freeware and open source. Please don't use it for commercial.
