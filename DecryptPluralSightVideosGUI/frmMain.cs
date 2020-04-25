@@ -169,8 +169,11 @@ namespace DecryptPluralSightVideosGUI
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog { SelectedPath = txtCoursePath.Text };
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
-                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                    string coursePath = folderBrowserDialog.SelectedPath;
+                    if (Path.GetFileName(folderBrowserDialog.SelectedPath) != "courses")
+                        coursePath += @"\courses";
+                    txtCoursePath.Text = coursePath;
+                    appSetting.CoursePath  = coursePath;
                 }
             }
             catch (PathTooLongException)
@@ -178,8 +181,11 @@ namespace DecryptPluralSightVideosGUI
                 VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    txtCoursePath.Text = folderBrowserDialog.SelectedPath;
-                    appSetting.CoursePath  = folderBrowserDialog.SelectedPath;
+                    string coursePath = folderBrowserDialog.SelectedPath;
+                    if (Path.GetFileName(folderBrowserDialog.SelectedPath) != "courses")
+                        coursePath += @"\courses";
+                    txtCoursePath.Text = coursePath;
+                    appSetting.CoursePath = coursePath;
                 }
             }
         }
