@@ -34,7 +34,7 @@ Added Feature:
    + Please don't remove the course from POP before decrypt. You can check the Delete checkbox to remove the course after the course decrypted.
    + You can delete all courses select all courses, check the `Delete` checkbox only, and press `Run`.
    + Some courses don't have subtitles, so the subtitle file will not be generated.
-
+   + You can watch video guide [here](https://youtu.be/mPytcMQY9Ck)
 # Author
 - Loc Nguyen.
 - Hieu Phan
