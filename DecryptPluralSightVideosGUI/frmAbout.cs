@@ -24,6 +24,7 @@ namespace DecryptPluralSightVideosGUI
             strb.AppendLine("- Mr.VoGiaCu (Mr.HomeLess :D)");
             strb.AppendLine("- sitiom");
             strb.AppendLine("");
+            strb.AppendLine("");
             strb.AppendLine("Option:");
             strb.AppendLine("- Decrypt: decrypt video");
             strb.AppendLine("- Create sub: create the subtitle if has");
@@ -35,13 +36,21 @@ namespace DecryptPluralSightVideosGUI
             strb.AppendLine("");
             strb.AppendLine("");
             strb.AppendLine("Use:");
-            strb.AppendLine("- Select course path, database path, and output path.");
-            strb.AppendLine("- Press Read course button to read course downloaded (only the downloaded course completed is displayed)");
-            strb.AppendLine("- Choose course want to decrypt or press select all to select all courses.");
-            strb.AppendLine("- Make sure the Decrypt checkbox is checked. If not, and Delete checkbox is checked. The tool will delete all selected course.");
-            strb.AppendLine("- Check to Create sub if you want to create the subtitle file.");
-            strb.AppendLine("- Check to the Delete checkbox if you want to delete the course after decrypt.");
-            strb.AppendLine("- Press run to start to process decrypt and wait.");
+            strb.AppendLine("- Step 1: Select the course path and DB file. Note: The course path always include \"\\courses\" at the end of the path.");
+            strb.AppendLine("- Step 2: After select exactly all paths, press the Read course button.");
+            strb.AppendLine("- Step 3: Select the courses want to decrypt or press the Select all button to select all courses.");
+            strb.AppendLine("- Step 4: Choose the option you want");
+            strb.AppendLine("   + Decrypt: Decrypt the course.");
+            strb.AppendLine("   + Create sub: Create the subtitle file.");
+            strb.AppendLine("   + Delete: Delete course after decrypt.");
+            strb.AppendLine("- Step 5: After choosing the option, press Run and waiting for the decrypt process finish.");
+            strb.AppendLine("");
+            strb.AppendLine("");
+            strb.AppendLine("Notes:");
+            strb.AppendLine("");
+            strb.AppendLine("- Please don't remove the course from POP before decrypt. You can check the Delete checkbox to remove the course after the course decrypted.");
+            strb.AppendLine("- You can delete all courses select all courses, check the Delete checkbox only, and press Run.");
+            strb.AppendLine("- Some courses don't have subtitles, so the subtitle file will not be generated.");
 
             textBox1.Text = strb.ToString();
         }

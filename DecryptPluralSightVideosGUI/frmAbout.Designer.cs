@@ -38,7 +38,7 @@
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(177, 3);
+            this.btnClose.Location = new System.Drawing.Point(243, 3);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 0;
@@ -52,7 +52,7 @@
             this.pnlInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlInfo.Location = new System.Drawing.Point(3, 3);
             this.pnlInfo.Name = "pnlInfo";
-            this.pnlInfo.Size = new System.Drawing.Size(429, 430);
+            this.pnlInfo.Size = new System.Drawing.Size(577, 497);
             this.pnlInfo.TabIndex = 1;
             // 
             // textBox1
@@ -64,7 +64,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(429, 430);
+            this.textBox1.Size = new System.Drawing.Size(577, 497);
             this.textBox1.TabIndex = 0;
             this.textBox1.TabStop = false;
             // 
@@ -72,16 +72,16 @@
             // 
             this.pnlButton.Controls.Add(this.btnClose);
             this.pnlButton.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlButton.Location = new System.Drawing.Point(3, 403);
+            this.pnlButton.Location = new System.Drawing.Point(3, 470);
             this.pnlButton.Name = "pnlButton";
-            this.pnlButton.Size = new System.Drawing.Size(429, 30);
+            this.pnlButton.Size = new System.Drawing.Size(577, 30);
             this.pnlButton.TabIndex = 2;
             // 
             // frmAbout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(435, 436);
+            this.ClientSize = new System.Drawing.Size(583, 503);
             this.ControlBox = false;
             this.Controls.Add(this.pnlButton);
             this.Controls.Add(this.pnlInfo);

@@ -364,13 +364,26 @@ namespace DecryptPluralSightVideosGUI
                     logger.Debug($"listCourse1: {listCourse.Count}");
                     listCourse = listCourse.Where(c => c.Course.IsDownloaded).ToList();
                     logger.Debug($"listCourse2: {listCourse.Count}");
+
                     foreach (CourseItem item in listCourse)
                     {
-                        Image img = File.Exists(item.CoursePath + @"\image.jpg") ? Image.FromFile(item.CoursePath + @"\image.jpg") : new Bitmap(100, 100);
+                        Image img, thumb;
+                        try
+                        {
+                            img = File.Exists(item.CoursePath + @"\image.jpg") ? Image.FromFile(item.CoursePath + @"\image.jpg", true) : new Bitmap(100, 100);
+                            thumb = img.GetThumbnailImage(160,90, () => false, IntPtr.Zero);
+                            img.Dispose();
+                        }
+                        catch
+                        {
+                            thumb = new Bitmap(160, 90);
+                            Graphics g = Graphics.FromImage(thumb);
+                            g.Clear(Color.Black);
+                        }
 
                         ListViewItem listItem = new ListViewItem() { ImageKey = item.Course.Name, Name = item.Course.Name, Text = item.Course.Title };
 
-                        bgwGetCourse.ReportProgress(1, new { Item = listItem, Image = img });
+                        bgwGetCourse.ReportProgress(1, new { Item = listItem, Image = thumb });
                     }
 
                     bgwGetCourse.ReportProgress(1, new Log() { Text = $"Complete! Total: {listCourse.Count} courses", TextColor = Color.Green, NewLine = true });
