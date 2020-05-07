@@ -12,9 +12,9 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using PluralCrypt.Encryption;
 using PluralCrypt.Model;
+using Module = PluralCrypt.Model.Module;
 using static System.Windows.Forms.ListView;
 using System.Reflection;
-using Module = PluralCrypt.Model.Module;
 
 namespace PluralCrypt
 {
