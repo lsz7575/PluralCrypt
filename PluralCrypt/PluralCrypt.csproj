@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <StartupObject>PluralCrypt.Program</StartupObject>
   </PropertyGroup>
 
