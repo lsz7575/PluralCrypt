@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using STATSTG = System.Runtime.InteropServices.ComTypes.STATSTG;
 
-namespace DecryptPluralSightVideosGUI.Encryption
+namespace PluralCrypt.Encryption
 {
     internal class VirtualFileStream : IStream, IDisposable
     {

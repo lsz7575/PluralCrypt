@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace DecryptPluralSightVideosGUI.Encryption
+namespace PluralCrypt.Encryption
 {
     public interface IPsStream
     {

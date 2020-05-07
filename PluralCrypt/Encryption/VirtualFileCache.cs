@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace DecryptPluralSightVideosGUI.Encryption
+namespace PluralCrypt.Encryption
 {
     public class VirtualFileCache : IDisposable
     {

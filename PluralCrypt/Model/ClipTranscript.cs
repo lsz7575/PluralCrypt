@@ -1,4 +1,4 @@
-﻿namespace DecryptPluralSightVideosGUI.Model
+﻿namespace PluralCrypt.Model
 {
     public class ClipTranscript
     {

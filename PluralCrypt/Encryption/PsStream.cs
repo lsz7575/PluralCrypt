@@ -1,8 +1,6 @@
 ﻿using System.IO;
-using File = Pri.LongPath.File;
-using FileInfo = Pri.LongPath.FileInfo;
 
-namespace DecryptPluralSightVideosGUI.Encryption
+namespace PluralCrypt.Encryption
 {
     public class PsStream : IPsStream
     {

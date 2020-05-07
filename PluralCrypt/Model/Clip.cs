@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DecryptPluralSightVideosGUI.Model
+namespace PluralCrypt.Model
 {
     public class Clip
     {
