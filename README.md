@@ -1,50 +1,35 @@
-# Decrypt PluralSight Videos
-When you download offline videos through the Pluralsight app, the videos saved to the device are encrypted, and you can only watch it on their app.
-This tool is made to decrypt the videos (.psv), decrypt module folder names, rearrange the course folders, overall decrypting the entire course.
+# PluralCrypt
 
-Based on: https://github.com/vinhloc1996/DecryptPluralSightVideos
-
-Added Feature:
-+ Add GUI
-+ Auto detected default Pluralsight Path
-+ List all Course downloaded (except unfinished download)
-+ Fix decrypt wrong Video (wrong name of video decrypted)
-+ More features, you can check it :D.
+A tool for decrypting Pluralsight videos downloaded from the Pluralsight Offline Player.
+This is a fork of https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI.
 
 # Getting Started
-* This tool requires .Net Framework `4.5.2` or above.
+
+* This tool requires .Net Core `3.1`.
 
 # Installing
-* Download the latest binary from [here](https://github.com/mrvogiacu/Decrypt-PluralSight-Videos-GUI/releases/latest).
-* Extract the zip file, open file DecryptPluralSightVideosGUI.exe.
-* Default Pluralsight Path is `C:\Users\<UserName>\AppData\Local\Pluralsight\courses`
+
+* Download the latest binary from [here](https://github.com/sitiom/PluralCrypt/releases/latest).
+* Extract the zip file in a folder and run the executable.
 
 # How to use
-* Step 1: Open file `DecryptPluralSightVideosGUI.exe`.
-* Step 2: Select the course path and DB file. Note: The course path always include `\courses` at the end of the path.
-* Step 3: After select exactly all paths, press the `Read course` button.
-* Step 4: Select the courses want to decrypt or press the `Select all` button to select all courses.
-* Step 5: Choose the option you want
-  - Decrypt: Decrypt the course.
-  - Create sub: Create the subtitle file.
-  - Delete: Delete course after decrypt.
-* Step 6: After choosing the option, press `Run` and waiting for the decrypt process finish.
+
+1. Select the course path and DB file. Default Pluralsight path is `%LOCALAPPDATA%\AppData\Local\Pluralsight\courses`.
+2. After selecting the output path, select `Read course`.
+3. Select the courses to decrypt or press the `Select all` button.
+4. After selecting your preferred options, `Run` and wait for the decryption process to finish.
 
 **Notes:**
-   + Please don't remove the course from POP before decrypt. You can check the Delete checkbox to remove the course after the course decrypted.
-   + You can delete all courses select all courses, check the `Delete` checkbox only, and press `Run`.
-   + Some courses don't have subtitles, so the subtitle file will not be generated.
-   + You can watch video guide [here](https://youtu.be/mPytcMQY9Ck)
++ Please don't remove the course from POP before decrypt. You can check the Delete checkbox to remove the course after the course decrypted.
++ You can delete all courses by selecting all courses, checking the `Delete` checkbox only, `Run`.
++ Some courses don't have subtitles, so the subtitle file will not be generated.
+
 # Author
-- Loc Nguyen.
-- Hieu Phan
+
 - sitiom
-
-# Version
-- This current version is `1.7.0.0`.
-
-# Reference
-- This tool has been made by myself but some functions about running command-line tools or style of code that I refer from [Lynda-Decryptor](https://github.com/h4ck-rOOt/Lynda-Decryptor).
+- Hieu Phan
+- Loc Nguyen.
 
 # Copyright ©
-- This software is freeware and open source. Please don't use it for commercial.
+
+- This software is freeware and open source. It is only intended for personal or educational use.
