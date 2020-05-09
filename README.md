@@ -21,7 +21,7 @@ This application is a fork of https://github.com/mrvogiacu/Decrypt-PluralSight-V
 4. After selecting your preferred options, `Run` and wait for the decryption process to finish.
 
 **Notes:**
-+ Please don't remove the course from Pluralsight Offine Player before decrypting. You can check the Delete checkbox to remove the course after the course decrypted.
++ Do not  remove the course from Pluralsight Offine Player before decrypting. You can check the `Delete` checkbox to remove the course after the course decrypted.
 + You can just delete courses by checking the `Delete` before running.
 + Some courses don't have subtitles.
 
