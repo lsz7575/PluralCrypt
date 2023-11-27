@@ -2,57 +2,104 @@
 {
     public class VideoEncryption
     {
-        private static bool useV1 = true;
+        private static int currentClipReadCrypto;
+
+        private static string string1V2 = "pluralsight";
+
+        private static string string2V2 = "#©>Å£Q\u0005¤°";
+
+        private const string String1 = "pluralsight";
+
+        private const string String2 = "\u0006?zY¢²\u0085\u009fL¾î0Ö.ì\u0017#©>Å£Q\u0005¤°\u00018Þ^\u008eú\u0019Lqß'\u009d\u0003ßE\u009eM\u0080'x:\0~¹\u0001ÿ 4³õ\u0003Ã§Ê\u000eAË¼\u0090è\u009eî~\u008b\u009aâ\u001b\u00b8UD<\u007fKç*\u001döæ7H\v\u0015Arý*v÷%Âþ¾ä;pü";
+
+        internal static readonly string[][] CryptoKeys = new string[5][]
+        {
+        new string[2] { "pluralsight", "\u0006?zY¢²\u0085\u009fL¾î0Ö.ì\u0017#©>Å£Q\u0005¤°\u00018Þ^\u008eú\u0019Lqß'\u009d\u0003ßE\u009eM\u0080'x:\0~¹\u0001ÿ 4³õ\u0003Ã§Ê\u000eAË¼\u0090è\u009eî~\u008b\u009aâ\u001b\u00b8UD<\u007fKç*\u001döæ7H\v\u0015Arý*v÷%Âþ¾ä;pü" },
+        new string[2] { String1V2, String2V2 },
+        new string[1] { "os22$!sKHyy9jnGlgHB&vP21CK96tx!l2uhK1K%Fbubree9%o0wT44zwvJ446iAdA%M!@RopKCmOWMOqTt1*BIw@lF68x3itctw" },
+        new string[1] { "XlmDvIlD*^uyZAfCMZ%M0h#o6Z7!4eMZZSBs@dZ12%rMvubV#2iFJLfh8@LSyVWhu37#b%z3MCF3u4244%SRMBO@zIG2YEi!i6y" },
+        new string[1] { "YUg2z3ev2G7WpeqYFf6B2Acw68pJPBgNbJzf39Bs2hZEpGRkGcsoqbNV2GRcfanLgRFG3pE8bp6LjViDryFCxACwuRh2jF2a4CZN" }
+        };
+
+        public static string String1V2
+        {
+            get
+            {
+                return string1V2;
+            }
+            set
+            {
+                CryptoKeys[1][0] = value;
+                string1V2 = value;
+            }
+        }
+
+        public static string String2V2
+        {
+            get
+            {
+                return string2V2;
+            }
+            set
+            {
+                CryptoKeys[1][1] = value;
+                string2V2 = value;
+            }
+        }
+
+        private static void XorBuffer(byte[] buff, int length, long position)
+        {
+            XorBuffer(currentClipReadCrypto, buff, length, position);
+        }
+
+        internal static void XorBuffer(int key, byte[] buff, int length, long position)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                string[] array = CryptoKeys[key];
+                string text = array[0];
+                int num = (int)position + i;
+                char c = text[num % text.Length];
+                for (int j = 1; j < array.Length; j++)
+                {
+                    text = array[j];
+                    c ^= text[num % text.Length];
+                }
+
+                int num2 = c ^ (num % 251);
+                buff[i] = (byte)(buff[i] ^ num2);
+            }
+        }
+
+        public static void EncryptBuffer(byte[] buff, int length, long position)
+        {
+            XorBuffer(CryptoKeys.Length - 1, buff, length, position);
+        }
 
         public static void DecryptBuffer(byte[] buff, int length, long position)
         {
-            if ((position != 0) || (length <= 3))
+            if (position == 0L)
             {
-                if (useV1)
+                for (int num = CryptoKeys.Length - 1; num >= 0; num--)
                 {
+                    currentClipReadCrypto = num;
+                    XorBuffer(buff, length, position);
+                    bool flag = buff.Length != 0;
+                    for (int i = 0; i < buff.Length && i < 3; i++)
+                    {
+                        flag = flag && buff[i] == 0;
+                    }
+
+                    if (flag)
+                    {
+                        return;
+                    }
+
                     XorBuffer(buff, length, position);
                 }
-                else
-                {
-                    XorBufferV2(buff, length, position);
-                }
             }
-            else
-            {
-                XorBuffer(buff, length, position);
-                if ((buff[0] == 0) && ((buff[1] == 0) && (buff[2] == 0)))
-                {
-                    useV1 = true;
-                }
-                else
-                {
-                    XorBuffer(buff, length, position);
-                    XorBufferV2(buff, length, position);
-                    useV1 = false;
-                }
-            }
-        }
 
-        public static void XorBuffer(byte[] buff, int length, long position)
-        {
-            string str = "pluralsight";
-            string str2 = "\x0006?zY\x00a2\x00b2\x0085\x009fL\x00be\x00ee0\x00d6.\x00ec\x0017#\x00a9>\x00c5\x00a3Q\x0005\x00a4\x00b0\x00018\x00de^\x008e\x00fa\x0019Lq\x00df'\x009d\x0003\x00dfE\x009eM\x0080'x:\0~\x00b9\x0001\x00ff 4\x00b3\x00f5\x0003\x00c3\x00a7\x00ca\x000eA\x00cb\x00bc\x0090\x00e8\x009e\x00ee~\x008b\x009a\x00e2\x001b\x00b8UD<\x007fK\x00e7*\x001d\x00f6\x00e67H\v\x0015Ar\x00fd*v\x00f7%\x00c2\x00fe\x00be\x00e4;p\x00fc";
-            for (int i = 0; i < length; i++)
-            {
-                byte num2 = (byte)((str[(int)((position + i) % ((long)str.Length))] ^ str2[(int)((position + i) % ((long)str2.Length))]) ^ ((position + i) % 0xfbL));
-                buff[i] = (byte)(buff[i] ^ num2);
-            }
-        }
-
-        public static void XorBufferV2(byte[] buff, int length, long position)
-        {
-            for (int i = 0; i < length; i++)
-            {
-                string str = "\0\x00bf{U9\x0001\x00ae`\x00eb\x0013\x00d1[\x001b\x00cf";
-                string str2 = "\x0002\x008d\a\x0099\x0089\x009a%\x0084K\x00b0s\x00fa\x00c148\x00e4cz@\x009f,\x00ed>\x00f6\x00a02\v\x00df\n@*\x00ed\vz\x008c\x0004\x00bd\x0093\0\x00dce\x00cb\x0086\x001f\b\x00d6\x009e AD\x00d3g&\x00ec\x00b6\x0017\x008d\x00c0\x0014{\x00b5\x00ec\x00df\x0088\x00d8\x009f\x00f2\x00d5\x00c4\x0081p\x00aa\x00aatC\x008a@\x009c2:\x00c5f\\\\\x00ad\x00e8\x009e\x00fd\x0002g\x0003|\x00d8Bf\x0092\x00a0";
-                byte num2 = (byte)((str[(int)((position + i) % ((long)str.Length))] ^ str2[(int)((position + i) % ((long)str2.Length))]) ^ ((position + i) % 0xfbL));
-                buff[i] = (byte)(buff[i] ^ num2);
-            }
+            XorBuffer(buff, length, position);
         }
     }
 }
